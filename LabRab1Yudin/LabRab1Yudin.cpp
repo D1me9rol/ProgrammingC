@@ -17,8 +17,7 @@ struct Tube
 struct Station
 {
     string StationName;
-    int ShopNum, WorkShopNum;
-    double Efficiency;
+    int ShopNum, WorkShopNum, Efficiency;
 };
 
 bool TubeExistence = false;
@@ -124,6 +123,7 @@ void RedactTube(Tube& MainTube)
     {
         cout << "Выберите признак трубы:\n 0. В ремонте\n 1. Починена" << endl;
         Validation(MainTube.TubeSign);
+        cout << "Данные о трубе изменены" << endl;
     }
     else
     {
@@ -135,13 +135,14 @@ void RedactStation(Station& AddedStation)
 {
     if (StationExistence)
     {
-        cout << "Введите количство рабочих цехов. От 0 до"<< AddedStation.ShopNum << endl;
+        cout << "Введите количство рабочих цехов. От 0 до "<< AddedStation.ShopNum << endl;
         Validation(AddedStation.WorkShopNum);
         while (AddedStation.WorkShopNum > AddedStation.ShopNum)
         {
             cout << "Количетсво рабочих цехов не может превышать общее количество цехов" << endl;
             Validation(AddedStation.WorkShopNum);
         }
+        cout << "Данные о станции изменены" << endl;
     }
 
     else
@@ -196,10 +197,24 @@ void FileRead(Tube& MainTube, Station& AddedStation)
     else
     {
         //cout << "Файл успешно открыт" << endl;
-        InData >> MainTube.TubeLength >> MainTube.TubeDiametre >> MainTube.TubeSign;
-        //getline(InData, AddedStation.StationName);
-        InData >> AddedStation.StationName >> AddedStation.ShopNum >> AddedStation.WorkShopNum >> AddedStation.Efficiency;
+        /*InData >> MainTube.TubeLength >> MainTube.TubeDiametre >> MainTube.TubeSign;
+        getline(InData, AddedStation.StationName);
+        InData >> AddedStation.ShopNum >> AddedStation.WorkShopNum >> AddedStation.Efficiency;*/
+        string Data[7] = {};
+        for (int i = 0; i < 7; i++)
+        {
+            getline(InData, Data[i]);
+        }
+        MainTube.TubeLength = stoi(Data[0]);
+        MainTube.TubeDiametre = stoi(Data[1]);
+        MainTube.TubeSign = stoi(Data[2]);
+        AddedStation.StationName = Data[3];
+        AddedStation.ShopNum = stoi(Data[4]);
+        AddedStation.WorkShopNum = stoi(Data[5]);
+        AddedStation.Efficiency = stoi(Data[6]);
         cout << "Данные прочитаны!" << endl;
+        TubeExistence = true;
+        StationExistence = true;
     }
     InData.close();
 }
@@ -252,9 +267,6 @@ int main()
         }
     } while (Option != 0);
     return 0;
-
-    
-
 }
 
 
