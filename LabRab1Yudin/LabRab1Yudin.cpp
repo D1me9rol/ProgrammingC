@@ -4,34 +4,34 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <cstdlib>
 
 using namespace std;
 
-struct Tube
+struct Pipe // Создание структуры Труба
 {
-    int TubeLength, TubeDiametre;
-    bool TubeSign;
+    int PipeLength, PipeDiametre;
+    bool PipeSign;
 };
 
-struct Station
+struct Station // Создание структуры Компрессорная станция
 {
     string StationName;
     int ShopNum, WorkShopNum, Efficiency;
 };
 
-bool TubeExistence = false;
+// Переменные существования трубы и станции
+bool PipeExistence = false; 
 bool StationExistence = false;
 
-void ShowMenu()
+void ShowMenu() // Вывод меню
 {
     cout << "Меню\n";
     cout << "1. Добавить трубу\n2. Добавить КС\n3. Просмотр всех объектов\n4. Редактировать трубу\n5. Редактировать КС\n6. Сохранить\n7. Загрузить\n0. Выход "<< endl;
     cout << "Выберите номер действия" << endl;
 }
 
-template <typename T>
-void Validation(T& input)
+template <typename T> // Создание шаблона
+void Validation(T& input) // Процедура проверки правильности ввода
 {
     while ((cin >> input).fail() || input < 0)
     {
@@ -41,20 +41,20 @@ void Validation(T& input)
     }
 }
 
-void AddTube(Tube& MainTube)
+void AddPipe(Pipe& Pipeline) // Процедура добавления трубы
 {
-    if (!TubeExistence)
+    if (!PipeExistence)
     {
         cout << "Введите длину трубы" << endl;
-        Validation(MainTube.TubeLength);
+        Validation(Pipeline.PipeLength);
 
         cout << "Введите диаметр трубы" << endl;
-        Validation(MainTube.TubeDiametre);
+        Validation(Pipeline.PipeDiametre);
 
         cout << "Выберите признак трубы:\n0. В ремонте\n1. Починена" << endl;
-        Validation(MainTube.TubeSign);
+        Validation(Pipeline.PipeSign);
 
-        TubeExistence = true;
+        PipeExistence = true;
     }
 
     else
@@ -63,27 +63,27 @@ void AddTube(Tube& MainTube)
     }
 }
 
-void AddStation(Station& AddedStation)
+void AddStation(Station& MainStation) // Процедура добавления станции
 {
     if (!StationExistence)
     {
         cout << "Введите название станции" << endl;
         cin.ignore();
-        getline(cin, AddedStation.StationName);
+        getline(cin, MainStation.StationName);
 
         cout << "Введите количество цехов" << endl;
-        Validation(AddedStation.ShopNum);
+        Validation(MainStation.ShopNum);
 
         cout << "Введите количество рабочих цехов" << endl;
-        Validation(AddedStation.WorkShopNum);
-        while (AddedStation.WorkShopNum > AddedStation.ShopNum)
+        Validation(MainStation.WorkShopNum);
+        while (MainStation.WorkShopNum > MainStation.ShopNum)
         {
             cout << "Количество рабочих цехов не может превышать общее количество цехов" << endl;
             cout << "Введите количество рабочих цехов" << endl;
-            Validation(AddedStation.WorkShopNum);
+            Validation(MainStation.WorkShopNum);
         }
         cout << "Введите показатель эффективности" << endl;
-        Validation(AddedStation.Efficiency);
+        Validation(MainStation.Efficiency);
 
         StationExistence = true;
     }
@@ -96,13 +96,13 @@ void AddStation(Station& AddedStation)
 }
 
 
-void ObjReview(Tube& MainTube, Station& AddedStation)
+void ObjReview(Pipe& Pipeline, Station& MainStation) // Процедура просмотра объектов
 {
-    if (TubeExistence)
+    if (PipeExistence)
     {
         cout << "Информация о трубе" << endl;
-        cout << "Длина трубы: " << MainTube.TubeLength << " м\nДиаметр: " << MainTube.TubeDiametre << "мм\nСостояние:";
-        if (MainTube.TubeSign)
+        cout << "Длина трубы: " << Pipeline.PipeLength << " м\nДиаметр: " << Pipeline.PipeDiametre << "мм\nСостояние:";
+        if (Pipeline.PipeSign)
         {
             cout << "Починена" << endl;
         }
@@ -113,16 +113,16 @@ void ObjReview(Tube& MainTube, Station& AddedStation)
     if (StationExistence)
     {
         cout << "Информация о компрессорной станции" << endl;
-        cout << "Название: " << AddedStation.StationName << "\nКоличесвто цехов: " << AddedStation.ShopNum << "\nКоличество рабочих цехов: " << AddedStation.WorkShopNum << "\nЭффективность:" << AddedStation.Efficiency << endl;
+        cout << "Название: " << MainStation.StationName << "\nКоличесвто цехов: " << MainStation.ShopNum << "\nКоличество рабочих цехов: " << MainStation.WorkShopNum << "\nЭффективность:" << MainStation.Efficiency << endl;
     }
 }
 
-void RedactTube(Tube& MainTube)
+void RedactPipe(Pipe& Pipeline) // Процедура редактирования трубы
 {
-    if (TubeExistence)
+    if (PipeExistence)
     {
         cout << "Выберите признак трубы:\n 0. В ремонте\n 1. Починена" << endl;
-        Validation(MainTube.TubeSign);
+        Validation(Pipeline.PipeSign);
         cout << "Данные о трубе изменены" << endl;
     }
     else
@@ -131,16 +131,16 @@ void RedactTube(Tube& MainTube)
     }
 }
 
-void RedactStation(Station& AddedStation)
+void RedactStation(Station& MainStation) // Процедура редактирования станции
 {
     if (StationExistence)
     {
-        cout << "Введите количство рабочих цехов. От 0 до "<< AddedStation.ShopNum << endl;
-        Validation(AddedStation.WorkShopNum);
-        while (AddedStation.WorkShopNum > AddedStation.ShopNum)
+        cout << "Введите количство рабочих цехов. От 0 до "<< MainStation.ShopNum << endl;
+        Validation(MainStation.WorkShopNum);
+        while (MainStation.WorkShopNum > MainStation.ShopNum)
         {
             cout << "Количетсво рабочих цехов не может превышать общее количество цехов" << endl;
-            Validation(AddedStation.WorkShopNum);
+            Validation(MainStation.WorkShopNum);
         }
         cout << "Данные о станции изменены" << endl;
     }
@@ -151,7 +151,7 @@ void RedactStation(Station& AddedStation)
     }
 }
 
-void FileSave(Tube MainTube, Station AddedStation)
+void FileSave(Pipe Pipeline, Station MainStation) // Процедура сохранения данных в файл
 {
     ofstream OutData;
     OutData.open("source.txt");
@@ -161,24 +161,14 @@ void FileSave(Tube MainTube, Station AddedStation)
     }
     else
     {
-        if (TubeExistence)
+        if (PipeExistence)
         { 
-            /*OutData << "Параметры трубы\nДлина трубы: " << MainTube.TubeLength << " м\nДиаметр трубы: " << MainTube.TubeDiametre << " мм\nСостояние трубы:";
-            if (MainTube.TubeSign)
-            {
-                OutData << "Починена\n";
-            }
-            else
-            {
-                OutData << "В ремонте\n\n";
-            }*/
-            OutData << MainTube.TubeLength << "\n" << MainTube.TubeDiametre << "\n" << MainTube.TubeSign << endl;
+            OutData << Pipeline.PipeLength << "\n" << Pipeline.PipeDiametre << "\n" << Pipeline.PipeSign << endl;
         }
 
         if (StationExistence)
         {
-           // OutData << "Параметры станции\nНазвание станции: " << AddedStation.StationName << "\nКоличество цехов: " << AddedStation.ShopNum<< "\nКоличество рабочих цехов:" << AddedStation.WorkShopNum << "\nЭффективность:" << AddedStation.Efficiency << endl;
-            OutData << AddedStation.StationName << "\n" << AddedStation.ShopNum << "\n" << AddedStation.WorkShopNum << "\n" << AddedStation.Efficiency << endl;
+            OutData << MainStation.StationName << "\n" << MainStation.ShopNum << "\n" << MainStation.WorkShopNum << "\n" << MainStation.Efficiency << endl;
         }
 
         OutData.close();
@@ -186,7 +176,7 @@ void FileSave(Tube MainTube, Station AddedStation)
     }
 }
 
-void FileRead(Tube& MainTube, Station& AddedStation)
+void FileRead(Pipe& Pipeline, Station& MainStation) // Процедура загрузки данных из файла
 {
     ifstream InData;
     InData.open("source.txt");
@@ -196,24 +186,12 @@ void FileRead(Tube& MainTube, Station& AddedStation)
     }
     else
     {
-        //cout << "Файл успешно открыт" << endl;
-        /*InData >> MainTube.TubeLength >> MainTube.TubeDiametre >> MainTube.TubeSign;
-        getline(InData, AddedStation.StationName);
-        InData >> AddedStation.ShopNum >> AddedStation.WorkShopNum >> AddedStation.Efficiency;*/
-        string Data[7] = {};
-        for (int i = 0; i < 7; i++)
-        {
-            getline(InData, Data[i]);
-        }
-        MainTube.TubeLength = stoi(Data[0]);
-        MainTube.TubeDiametre = stoi(Data[1]);
-        MainTube.TubeSign = stoi(Data[2]);
-        AddedStation.StationName = Data[3];
-        AddedStation.ShopNum = stoi(Data[4]);
-        AddedStation.WorkShopNum = stoi(Data[5]);
-        AddedStation.Efficiency = stoi(Data[6]);
+        InData >> Pipeline.PipeLength >> Pipeline.PipeDiametre >> Pipeline.PipeSign;
+        InData.ignore();
+        getline(InData, MainStation.StationName);
+        InData >> MainStation.ShopNum >> MainStation.WorkShopNum >> MainStation.Efficiency;
         cout << "Данные прочитаны!" << endl;
-        TubeExistence = true;
+        PipeExistence = true;
         StationExistence = true;
     }
     InData.close();
@@ -224,8 +202,8 @@ int main()
     setlocale(LC_ALL, "rus");
     
     
-    Station AddedStation;
-    Tube MainTube;
+    Station MainStation;
+    Pipe Pipeline;
     int Option;
 
     do
@@ -235,32 +213,29 @@ int main()
         switch (Option)
         {
         case 1:
-            AddTube(MainTube);
+            AddPipe(Pipeline);
             break;
         case 2:
-            AddStation(AddedStation);
+            AddStation(MainStation);
             break;
         case 3:
-            ObjReview(MainTube, AddedStation);
+            ObjReview(Pipeline, MainStation);
             break;
         case 4:
-            RedactTube(MainTube);
+            RedactPipe(Pipeline);
             break;
         case 5:
-            RedactStation(AddedStation);
+            RedactStation(MainStation);
             break;
         case 6:
-            FileSave(MainTube, AddedStation);
+            FileSave(Pipeline, MainStation);
             break;
         case 7:
-            FileRead(MainTube, AddedStation);
+            FileRead(Pipeline, MainStation);
             break;
         case 0:
             cout << "До свидания!" << endl;
             break;
-            //exit(0);
-        /*case 0:
-            exit(0);*/
         default:
             cout << "Выберите значение от 0 до 7" << endl;
             break;
