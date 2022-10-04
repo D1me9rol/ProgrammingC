@@ -20,8 +20,8 @@ struct Station // Создание структуры Компрессорная
 };
 
 // Переменные существования трубы и станции
-bool PipeExistence = false; 
-bool StationExistence = false;
+//bool Pipeline.PipeDiametre>0 && Pipeline.PipeLength>0 = false; 
+//bool MainStation.StationName.empty() = false;
 
 void ShowMenu() // Вывод меню
 {
@@ -43,8 +43,6 @@ void Validation(T& input) // Процедура проверки правиль�
 
 void AddPipe(Pipe& Pipeline) // Процедура добавления трубы
 {
-    if (!PipeExistence)
-    {
         cout << "Введите длину трубы" << endl;
         Validation(Pipeline.PipeLength);
 
@@ -54,19 +52,12 @@ void AddPipe(Pipe& Pipeline) // Процедура добавления труб
         cout << "Выберите признак трубы:\n0. В ремонте\n1. Починена" << endl;
         Validation(Pipeline.PipeSign);
 
-        PipeExistence = true;
-    }
+       // Pipeline.PipeDiametre>0 && Pipeline.PipeLength>0 = true;
 
-    else
-    {
-        cout << "Труба уже существует" << endl;
-    }
 }
 
 void AddStation(Station& MainStation) // Процедура добавления станции
 {
-    if (!StationExistence)
-    {
         cout << "Введите название станции" << endl;
         cin.ignore();
         getline(cin, MainStation.StationName);
@@ -79,26 +70,19 @@ void AddStation(Station& MainStation) // Процедура добавления
         while (MainStation.WorkShopNum > MainStation.ShopNum)
         {
             cout << "Количество рабочих цехов не может превышать общее количество цехов" << endl;
-            cout << "Введите количество рабочих цехов" << endl;
+            cout << "Введите количество рабочих цехов от 0 до " << MainStation.ShopNum << endl;
             Validation(MainStation.WorkShopNum);
         }
         cout << "Введите показатель эффективности" << endl;
         Validation(MainStation.Efficiency);
 
-        StationExistence = true;
-    }
-    
-
-    else
-    {
-        cout << "Компрессорная станция уже существует" << endl;
-    }
+        //MainStation.StationName.empty() = true;
 }
 
 
 void ObjReview(Pipe& Pipeline, Station& MainStation) // Процедура просмотра объектов
 {
-    if (PipeExistence)
+    if (Pipeline.PipeDiametre>0 && Pipeline.PipeLength>0)
     {
         cout << "Информация о трубе" << endl;
         cout << "Длина трубы: " << Pipeline.PipeLength << " м\nДиаметр: " << Pipeline.PipeDiametre << "мм\nСостояние:";
@@ -110,16 +94,21 @@ void ObjReview(Pipe& Pipeline, Station& MainStation) // Процедура пр�
             cout << "В ремонте" << endl;
     }
 
-    if (StationExistence)
+    if (!MainStation.StationName.empty())
     {
         cout << "Информация о компрессорной станции" << endl;
         cout << "Название: " << MainStation.StationName << "\nКоличесвто цехов: " << MainStation.ShopNum << "\nКоличество рабочих цехов: " << MainStation.WorkShopNum << "\nЭффективность:" << MainStation.Efficiency << endl;
+    }
+
+    if (Pipeline.PipeDiametre <= 0 && Pipeline.PipeLength <= 0 && MainStation.StationName.empty())
+    {
+        cout << "Данные не заданы!" << endl;
     }
 }
 
 void RedactPipe(Pipe& Pipeline) // Процедура редактирования трубы
 {
-    if (PipeExistence)
+    if (Pipeline.PipeDiametre>0 && Pipeline.PipeLength>0)
     {
         cout << "Выберите признак трубы:\n 0. В ремонте\n 1. Починена" << endl;
         Validation(Pipeline.PipeSign);
@@ -133,7 +122,7 @@ void RedactPipe(Pipe& Pipeline) // Процедура редактировани
 
 void RedactStation(Station& MainStation) // Процедура редактирования станции
 {
-    if (StationExistence)
+    if (!MainStation.StationName.empty())
     {
         cout << "Введите количство рабочих цехов. От 0 до "<< MainStation.ShopNum << endl;
         Validation(MainStation.WorkShopNum);
@@ -161,12 +150,12 @@ void FileSave(Pipe Pipeline, Station MainStation) // Процедура сохр
     }
     else
     {
-        if (PipeExistence)
+        if (Pipeline.PipeDiametre>0 && Pipeline.PipeLength>0)
         { 
             OutData << Pipeline.PipeLength << "\n" << Pipeline.PipeDiametre << "\n" << Pipeline.PipeSign << endl;
         }
 
-        if (StationExistence)
+        if (!MainStation.StationName.empty())
         {
             OutData << MainStation.StationName << "\n" << MainStation.ShopNum << "\n" << MainStation.WorkShopNum << "\n" << MainStation.Efficiency << endl;
         }
@@ -178,6 +167,8 @@ void FileSave(Pipe Pipeline, Station MainStation) // Процедура сохр
 
 void FileRead(Pipe& Pipeline, Station& MainStation) // Процедура загрузки данных из файла
 {
+    int FileLength = 0;
+    string str;
     ifstream InData;
     InData.open("source.txt");
     if (!InData.is_open())
@@ -186,13 +177,36 @@ void FileRead(Pipe& Pipeline, Station& MainStation) // Процедура заг
     }
     else
     {
-        InData >> Pipeline.PipeLength >> Pipeline.PipeDiametre >> Pipeline.PipeSign;
-        InData.ignore();
-        getline(InData, MainStation.StationName);
-        InData >> MainStation.ShopNum >> MainStation.WorkShopNum >> MainStation.Efficiency;
-        cout << "Данные прочитаны!" << endl;
-        PipeExistence = true;
-        StationExistence = true;
+        cout << "Файл успешно открыт" << endl;
+
+        while (!InData.eof())
+        {
+            getline(InData, str);
+            FileLength++;
+        }
+        InData.close();
+        InData.open("source.txt");
+        if (FileLength <4)
+        {
+            cout << "Файл не содержит данных" << endl;
+        }
+        else if (FileLength == 4)
+        {
+            InData >> Pipeline.PipeLength >> Pipeline.PipeDiametre >> Pipeline.PipeSign;
+        }
+        else if (FileLength == 5)
+        {
+            InData.ignore();
+            getline(InData, MainStation.StationName);
+            InData >> MainStation.ShopNum >> MainStation.WorkShopNum >> MainStation.Efficiency;
+        }
+        else
+        {
+            InData >> Pipeline.PipeLength >> Pipeline.PipeDiametre >> Pipeline.PipeSign;
+            InData.ignore();
+            getline(InData, MainStation.StationName);
+            InData >> MainStation.ShopNum >> MainStation.WorkShopNum >> MainStation.Efficiency;
+        }
     }
     InData.close();
 }
