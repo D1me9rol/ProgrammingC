@@ -19,9 +19,6 @@ struct Station // Создание структуры Компрессорная
     int ShopNum, WorkShopNum, Efficiency;
 };
 
-// Переменные существования трубы и станции
-//bool Pipeline.PipeDiametre>0 && Pipeline.PipeLength>0 = false; 
-//bool MainStation.StationName.empty() = false;
 
 void ShowMenu() // Вывод меню
 {
@@ -52,7 +49,7 @@ void AddPipe(Pipe& Pipeline) // Процедура добавления труб
         cout << "Выберите признак трубы:\n0. В ремонте\n1. Починена" << endl;
         Validation(Pipeline.PipeSign);
 
-       // Pipeline.PipeDiametre>0 && Pipeline.PipeLength>0 = true;
+
 
 }
 
@@ -76,7 +73,7 @@ void AddStation(Station& MainStation) // Процедура добавления
         cout << "Введите показатель эффективности" << endl;
         Validation(MainStation.Efficiency);
 
-        //MainStation.StationName.empty() = true;
+        
 }
 
 
@@ -94,13 +91,13 @@ void ObjReview(Pipe& Pipeline, Station& MainStation) // Процедура пр�
             cout << "В ремонте" << endl;
     }
 
-    if (!MainStation.StationName.empty())
+    if (MainStation.ShopNum>0)
     {
         cout << "Информация о компрессорной станции" << endl;
         cout << "Название: " << MainStation.StationName << "\nКоличесвто цехов: " << MainStation.ShopNum << "\nКоличество рабочих цехов: " << MainStation.WorkShopNum << "\nЭффективность:" << MainStation.Efficiency << endl;
     }
 
-    if (Pipeline.PipeDiametre <= 0 && Pipeline.PipeLength <= 0 && MainStation.StationName.empty())
+    if (Pipeline.PipeDiametre <= 0 && Pipeline.PipeLength <= 0 && MainStation.ShopNum<1)
     {
         cout << "Данные не заданы!" << endl;
     }
@@ -122,7 +119,7 @@ void RedactPipe(Pipe& Pipeline) // Процедура редактировани
 
 void RedactStation(Station& MainStation) // Процедура редактирования станции
 {
-    if (!MainStation.StationName.empty())
+    if (MainStation.ShopNum>0)
     {
         cout << "Введите количство рабочих цехов. От 0 до "<< MainStation.ShopNum << endl;
         Validation(MainStation.WorkShopNum);
@@ -150,12 +147,15 @@ void FileSave(Pipe Pipeline, Station MainStation) // Процедура сохр
     }
     else
     {
-        if (Pipeline.PipeDiametre>0 && Pipeline.PipeLength>0)
-        { 
+        
+        OutData << (Pipeline.PipeDiametre > 0 && Pipeline.PipeLength > 0) << endl;
+        OutData << (MainStation.ShopNum > 0) << endl;
+
+        if (Pipeline.PipeDiametre > 0 && Pipeline.PipeLength > 0)
+        {
             OutData << Pipeline.PipeLength << "\n" << Pipeline.PipeDiametre << "\n" << Pipeline.PipeSign << endl;
         }
-
-        if (!MainStation.StationName.empty())
+        if (MainStation.ShopNum>0)
         {
             OutData << MainStation.StationName << "\n" << MainStation.ShopNum << "\n" << MainStation.WorkShopNum << "\n" << MainStation.Efficiency << endl;
         }
@@ -167,7 +167,8 @@ void FileSave(Pipe Pipeline, Station MainStation) // Процедура сохр
 
 void FileRead(Pipe& Pipeline, Station& MainStation) // Процедура загрузки данных из файла
 {
-    int FileLength = 0;
+    int StationsAmount;
+    int PipesAmount;
     string str;
     ifstream InData;
     InData.open("source.txt");
@@ -179,27 +180,25 @@ void FileRead(Pipe& Pipeline, Station& MainStation) // Процедура заг
     {
         cout << "Файл успешно открыт" << endl;
 
-        while (!InData.eof())
-        {
-            getline(InData, str);
-            FileLength++;
-        }
-        InData.close();
-        InData.open("source.txt");
-        if (FileLength <4)
+        InData >> PipesAmount >> StationsAmount;
+
+        if (PipesAmount==0 && StationsAmount==0)
         {
             cout << "Файл не содержит данных" << endl;
         }
-        else if (FileLength == 4)
+
+        else if (PipesAmount>0 && StationsAmount==0)
         {
             InData >> Pipeline.PipeLength >> Pipeline.PipeDiametre >> Pipeline.PipeSign;
         }
-        else if (FileLength == 5)
+
+        else if (StationsAmount>0 && PipesAmount==0)
         {
             InData.ignore();
             getline(InData, MainStation.StationName);
             InData >> MainStation.ShopNum >> MainStation.WorkShopNum >> MainStation.Efficiency;
         }
+
         else
         {
             InData >> Pipeline.PipeLength >> Pipeline.PipeDiametre >> Pipeline.PipeSign;
@@ -217,7 +216,7 @@ int main()
     
     
     Station MainStation;
-    Pipe Pipeline;
+    Pipe Pipeline{};
     int Option;
 
     do
