@@ -4,26 +4,49 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <map>
+#include <vector>
 
 using namespace std;
 
-struct Pipe // Создание структуры Труба
+
+
+class Pipe // Создание класса Труба
 {
+public:
+    string PipeName;
     int PipeLength, PipeDiametre;
     bool PipeSign;
+
+    void Print()
+    {
+        cout <<"Номер трубы: " << PipeName << "\tДлина трубы: " <<PipeLength << " м\tДиаметр: " <<PipeDiametre << "мм\tСостояние: ";
+        if (PipeSign)
+        {
+            cout << "Починена" << endl;
+        }
+        else
+            cout << "В ремонте" << endl;
+    }
 };
 
-struct Station // Создание структуры Компрессорная станция
+class Station // Создание класса Компрессорная станция
 {
+public:
     string StationName;
     int ShopNum, WorkShopNum, Efficiency;
+
+    void Print()
+    {
+        cout << "Название: " <<StationName << "\tКоличество цехов: " <<ShopNum << "\tКоличество рабочих цехов: " <<WorkShopNum << "\tЭффективность:" <<Efficiency << endl;
+    }
 };
 
 
 void ShowMenu() // Вывод меню
 {
     cout << "Меню\n";
-    cout << "1. Добавить трубу\n2. Добавить КС\n3. Просмотр всех объектов\n4. Редактировать трубу\n5. Редактировать КС\n6. Сохранить\n7. Загрузить\n0. Выход "<< endl;
+    cout << "1. Добавить трубу\n2. Добавить КС\n3. Просмотр всех объектов\n4. Редактировать трубу\n5. Редактировать КС\n6. Сохранить\n7. Загрузить\n8. Найти объекты\n0. Выход "<< endl;
     cout << "Выберите номер действия" << endl;
 }
 
@@ -32,28 +55,36 @@ void Validation(T& input) // Процедура проверки правиль�
 {
     while ((cin >> input).fail() || input < 0)
     {
-        cout << "Введите корректное значение"<< endl;
+        cout << "Введите корректное значение" << endl;
         cin.clear();
         cin.ignore(INT_MAX, '\n');
     }
 }
 
-void AddPipe(Pipe& Pipeline) // Процедура добавления трубы
+void AddPipe(Pipe& Pipeline, map<int, Pipe>& MapOfPipes) // Процедура добавления трубы
 {
-        cout << "Введите длину трубы" << endl;
-        Validation(Pipeline.PipeLength);
+    cout << "Введите название трубы" << endl;
+    cin.ignore();
+    getline(cin, Pipeline.PipeName);
 
-        cout << "Введите диаметр трубы" << endl;
-        Validation(Pipeline.PipeDiametre);
+    cout << "Введите длину трубы" << endl;
+    Validation(Pipeline.PipeLength);
 
-        cout << "Выберите признак трубы:\n0. В ремонте\n1. Починена" << endl;
-        Validation(Pipeline.PipeSign);
+    cout << "Введите диаметр трубы" << endl;
+    Validation(Pipeline.PipeDiametre);
 
+    cout << "Выберите признак трубы:\n0. В ремонте\n1. Починена" << endl;
+    Validation(Pipeline.PipeSign);
 
+    if (Pipeline.PipeDiametre > 0 && Pipeline.PipeLength > 0)
+    { 
+        MapOfPipes.emplace(MapOfPipes.size(), Pipeline);
+        //MapOfPipesCount++;
+    }
 
 }
 
-void AddStation(Station& MainStation) // Процедура добавления станции
+void AddStation(Station& MainStation, map<int, Station>& MapOfStations) // Процедура добавления станции
 {
         cout << "Введите название станции" << endl;
         cin.ignore();
@@ -64,83 +95,64 @@ void AddStation(Station& MainStation) // Процедура добавления
 
         cout << "Введите количество рабочих цехов" << endl;
         Validation(MainStation.WorkShopNum);
+
         while (MainStation.WorkShopNum > MainStation.ShopNum)
         {
             cout << "Количество рабочих цехов не может превышать общее количество цехов" << endl;
             cout << "Введите количество рабочих цехов от 0 до " << MainStation.ShopNum << endl;
             Validation(MainStation.WorkShopNum);
         }
+
         cout << "Введите показатель эффективности" << endl;
         Validation(MainStation.Efficiency);
 
-        
+        if (MainStation.ShopNum > 0)
+        { 
+            MapOfStations.emplace(MapOfStations.size(), MainStation);
+        }
 }
 
 
-void ObjReview(Pipe& Pipeline, Station& MainStation) // Процедура просмотра объектов
+void ObjReview(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // Процедура просмотра объектов
 {
-    if (Pipeline.PipeDiametre>0 && Pipeline.PipeLength>0)
+    Pipe pipe;
+    Station station;
+    if (MapOfPipes.size()>0)
     {
-        cout << "Информация о трубе" << endl;
-        cout << "Длина трубы: " << Pipeline.PipeLength << " м\nДиаметр: " << Pipeline.PipeDiametre << "мм\nСостояние:";
-        if (Pipeline.PipeSign)
+        cout << "Информация о трубах" << endl;
+        for (const auto& p:MapOfPipes)
         {
-            cout << "Починена" << endl;
-        }
-        else
-            cout << "В ремонте" << endl;
+            pipe = p.second;
+            pipe.Print();
+        } 
     }
-
-    if (MainStation.ShopNum>0)
+    if (MapOfStations.size()>0)
     {
-        cout << "Информация о компрессорной станции" << endl;
-        cout << "Название: " << MainStation.StationName << "\nКоличесвто цехов: " << MainStation.ShopNum << "\nКоличество рабочих цехов: " << MainStation.WorkShopNum << "\nЭффективность:" << MainStation.Efficiency << endl;
+        cout << "Информация о компрессорных станциях" << endl;
+        for (const auto& s:MapOfStations)
+        {
+            station = s.second;
+            station.Print();
+        }
     }
 
-    if (Pipeline.PipeDiametre <= 0 && Pipeline.PipeLength <= 0 && MainStation.ShopNum<1)
+    if (MapOfStations.size()==0 && MapOfPipes.size()==0)
     {
         cout << "Данные не заданы!" << endl;
     }
 }
 
-void RedactPipe(Pipe& Pipeline) // Процедура редактирования трубы
+void FileSave(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // Процедура сохранения данных в файл
 {
-    if (Pipeline.PipeDiametre>0 && Pipeline.PipeLength>0)
-    {
-        cout << "Выберите признак трубы:\n 0. В ремонте\n 1. Починена" << endl;
-        Validation(Pipeline.PipeSign);
-        cout << "Данные о трубе изменены" << endl;
-    }
-    else
-    {
-        cout << "Действие невозможно. Труба не задана" << endl;
-    }
-}
+    Pipe pipe;
+    Station station;
+    string FileName;
 
-void RedactStation(Station& MainStation) // Процедура редактирования станции
-{
-    if (MainStation.ShopNum>0)
-    {
-        cout << "Введите количство рабочих цехов. От 0 до "<< MainStation.ShopNum << endl;
-        Validation(MainStation.WorkShopNum);
-        while (MainStation.WorkShopNum > MainStation.ShopNum)
-        {
-            cout << "Количетсво рабочих цехов не может превышать общее количество цехов" << endl;
-            Validation(MainStation.WorkShopNum);
-        }
-        cout << "Данные о станции изменены" << endl;
-    }
-
-    else
-    {
-        cout << "Действие невозможно. Станция не задана" << endl;
-    }
-}
-
-void FileSave(Pipe Pipeline, Station MainStation) // Процедура сохранения данных в файл
-{
+    cout << "Введите название файла" << endl;
+    cin.ignore();
+    getline(cin, FileName);
     ofstream OutData;
-    OutData.open("source.txt");
+    OutData.open(FileName);
     if (! OutData.is_open())
     {
         cout << "Не удалось открыть файл" << endl;
@@ -148,30 +160,46 @@ void FileSave(Pipe Pipeline, Station MainStation) // Процедура сохр
     else
     {
         
-        OutData << (Pipeline.PipeDiametre > 0 && Pipeline.PipeLength > 0) << endl;
-        OutData << (MainStation.ShopNum > 0) << endl;
+        OutData << MapOfPipes.size() << endl;
+        OutData << MapOfStations.size() << endl;
 
-        if (Pipeline.PipeDiametre > 0 && Pipeline.PipeLength > 0)
-        {
-            OutData << Pipeline.PipeLength << "\n" << Pipeline.PipeDiametre << "\n" << Pipeline.PipeSign << endl;
+        if (MapOfPipes.size() > 0)
+        { 
+            for (const auto& p : MapOfPipes)
+            {
+                pipe = p.second;
+                OutData << pipe.PipeName << "\n" << pipe.PipeLength << "\n" << pipe.PipeDiametre << "\n" << pipe.PipeSign << endl;;
+            }
         }
-        if (MainStation.ShopNum>0)
+        if (MapOfStations.size() > 0)
         {
-            OutData << MainStation.StationName << "\n" << MainStation.ShopNum << "\n" << MainStation.WorkShopNum << "\n" << MainStation.Efficiency << endl;
+            for (const auto& s : MapOfStations)
+            {
+                station = s.second;
+                OutData << station.StationName << "\n" << station.ShopNum << "\n" << station.WorkShopNum << "\n" << station.Efficiency << endl;
+            }
         }
-
-        OutData.close();
-        cout << "Данные сохранены!" << endl;
+            OutData.close();
+        if (MapOfPipes.size() == 0 && MapOfStations.size() == 0)
+            cout << "Сохранен пустой файл" << endl;
+        else
+            cout << "Данные сохранены!" << endl;    
     }
 }
 
-void FileRead(Pipe& Pipeline, Station& MainStation) // Процедура загрузки данных из файла
+void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station> MapOfStations, vector<int>& VecOfPipes, vector<int>& VecOfStations) // Процедура загрузки данных из файла
 {
-    int StationsAmount;
     int PipesAmount;
-    string str;
+    int StationsAmount;
+    string FileName ="";
     ifstream InData;
-    InData.open("source.txt");
+
+        cout << "Введите название файла с исходными данными" << endl;
+        cin.ignore();
+        getline(cin, FileName);
+
+    InData.open(FileName);
+
     if (!InData.is_open())
     {
         cout << "Не удалось открыть файл" << endl;
@@ -181,6 +209,7 @@ void FileRead(Pipe& Pipeline, Station& MainStation) // Процедура заг
         cout << "Файл успешно открыт" << endl;
 
         InData >> PipesAmount >> StationsAmount;
+        //cout << PipesAmount << " " << StationsAmount << endl;
 
         if (PipesAmount==0 && StationsAmount==0)
         {
@@ -189,25 +218,200 @@ void FileRead(Pipe& Pipeline, Station& MainStation) // Процедура заг
 
         else if (PipesAmount>0 && StationsAmount==0)
         {
-            InData >> Pipeline.PipeLength >> Pipeline.PipeDiametre >> Pipeline.PipeSign;
+            for (int i=0; i<PipesAmount; i++)
+            { 
+                InData.ignore();
+                getline(InData, MapOfPipes[i].PipeName);
+                InData >> MapOfPipes[i].PipeLength >> MapOfPipes[i].PipeDiametre >> MapOfPipes[i].PipeSign;
+                //VecOfPipes.push_back(i);
+            }
         }
-
         else if (StationsAmount>0 && PipesAmount==0)
         {
-            InData.ignore();
-            getline(InData, MainStation.StationName);
-            InData >> MainStation.ShopNum >> MainStation.WorkShopNum >> MainStation.Efficiency;
+            for (int i =0; i<StationsAmount; i++)
+            { 
+                InData.ignore();
+                getline(InData, MapOfStations[i].StationName);
+                InData >> MapOfStations[i].ShopNum >> MapOfStations[i].WorkShopNum >> MapOfStations[i].Efficiency;
+                //VecOfStations.push_back(i);
+            }
         }
 
         else
         {
-            InData >> Pipeline.PipeLength >> Pipeline.PipeDiametre >> Pipeline.PipeSign;
-            InData.ignore();
-            getline(InData, MainStation.StationName);
-            InData >> MainStation.ShopNum >> MainStation.WorkShopNum >> MainStation.Efficiency;
+                for (int i = 0; i < PipesAmount; i++)
+                {
+                        InData.ignore();
+                        getline(InData, MapOfPipes[i].PipeName);
+                        InData >> MapOfPipes[i].PipeLength >> MapOfPipes[i].PipeDiametre >> MapOfPipes[i].PipeSign;
+                        //VecOfPipes.push_back(i);
+                }
+                for (int i = 0; i < StationsAmount; i++)
+                {
+                    InData.ignore();
+                    getline(InData, MapOfStations[i].StationName);
+                    InData >> MapOfStations[i].ShopNum >> MapOfStations[i].WorkShopNum >> MapOfStations[i].Efficiency;
+                    //VecOfStations.push_back(i);
+                }
         }
     }
     InData.close();
+}
+
+void FindPipe(map<int, Pipe>& MapOfPipes, vector<int>& VecOfPipes)
+{
+    VecOfPipes.clear();
+    bool RepairSign;
+    bool Sign;
+    string Name;
+    int counter = 0;
+    Pipe pipe;
+
+    cout << "0.Название\t 1.Признак 'в ремонте'" << endl;
+    Validation(Sign);
+    if (!Sign)
+    {
+        cout << "Введите название трубы" << endl;
+        cin.ignore();
+        getline(cin, Name);
+
+        for (const auto& p:MapOfPipes)
+        {
+            pipe = p.second;
+            string PipeName = pipe.PipeName;
+            if (PipeName.find(Name) >= 0 && PipeName.find(Name)<=PipeName.length())
+            {
+                cout << PipeName.find(Name) << endl;
+                pipe.Print();
+                VecOfPipes.push_back(p.first);
+            }
+        }
+    }
+    else
+    {
+        cout << "Введите признак:\t0.В ремонте\t1. Починена" << endl;
+        Validation(RepairSign);
+        for (const auto& p : MapOfPipes)
+        {
+            pipe = p.second;
+            if (pipe.PipeSign == RepairSign)
+            {
+                pipe.Print();
+                VecOfPipes.push_back(p.first);
+               // cout << VecOfPipes[0] << endl;
+            }
+        }
+    }
+}
+
+void FindStation(map<int, Station>& MapOfStations, vector<int>& VecOfStations)
+{
+    VecOfStations.clear();
+    string Name;
+    bool Sign;
+    float ShopProcent;
+    int counter = 0;
+    Station station;
+
+    cout << "0.Название\t1.Процент незадействованных цехов" << endl;
+    Validation(Sign);
+    if (!Sign)
+    {
+        cout << "Введите название станции" << endl;
+        cin.ignore();
+        getline(cin, Name);
+
+        for (const auto& s:MapOfStations)
+        {
+            station = s.second;
+            if (station.StationName.find(Name) >= 0 && station.StationName.find(Name)<= station.StationName.length())
+            {
+                station.Print();
+                VecOfStations.push_back(s.first);
+            }
+        }
+    }
+    else
+    {
+        cout << "Введите процент незадействованных цехов" << endl;
+        Validation(ShopProcent);
+        for (const auto& s:MapOfStations)
+        {
+            station = s.second;
+            if (((station.ShopNum - station.WorkShopNum) / station.ShopNum)*100 >= ShopProcent)
+            {
+                station.Print();
+                VecOfStations.push_back(s.first);
+            }
+        }
+    }
+    if (counter == 0)
+        cout << "Объекты не найдены!" << endl;
+}
+
+void FindObj(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations, vector<int>& VecOfPipes, vector<int>& VecOfStations)
+{
+    bool Object;
+    cout << "Выберите объекты для поиска:\n0.Трубы\t1.Станции" << endl;
+    Validation(Object);
+    cout << "Выберите признак для поиска:" << endl;
+    if (!Object)
+        FindPipe(MapOfPipes, VecOfPipes);
+    else
+        FindStation(MapOfStations, VecOfStations);
+}
+
+void RedactPipes(map<int, Pipe>& MapOfPipes, vector<int>& VecOfPipes)
+{
+    cout << "Выберите признак для поиска труб" << endl;
+    FindPipe(MapOfPipes, VecOfPipes);
+    bool RepairSign;
+    bool Option;
+    cout << "Веберите действие:\n0.Удалить\t1.Редактировать";
+    Validation(Option);
+    if (Option)
+    {
+        cout << "Выберите признак 'в ремонте'\t0.В ремонте\t1.Починена" << endl;
+        Validation(RepairSign);
+        for (int i = 0; i < VecOfPipes.size(); i++)
+        {
+            MapOfPipes[VecOfPipes[i]].PipeSign = RepairSign;
+        }
+    }
+    else
+    {
+        for (int i = 0; i < VecOfPipes.size(); i++)
+        {
+            MapOfPipes.erase(VecOfPipes[i]);
+        }
+    }
+}
+
+void RedactStation(map<int, Station>& MapOfStations, vector<int>& VecOfStations)
+{
+    cout << "Выберите признак для поиска станций" << endl;
+    FindStation(MapOfStations, VecOfStations);
+    int WorkShopNum;
+    bool Option;
+
+    cout << "Веберите действие:\n0.Удалить\t1.Редактировать";
+    Validation(Option);
+    if (Option)
+    {
+        cout << "Введите количество рабочих цехов" << endl;
+        Validation(WorkShopNum);
+        for (int i = 0; i < VecOfStations.size(); i++)
+        {
+            MapOfStations[VecOfStations[i]].WorkShopNum = WorkShopNum;
+        }
+    }
+    else
+    {
+        for (int i = 0; i < VecOfStations.size(); i++)
+        {
+            MapOfStations.erase(VecOfStations[i]);
+        }
+    }
 }
 
 int main()
@@ -216,7 +420,13 @@ int main()
     
     
     Station MainStation;
-    Pipe Pipeline{};
+    Pipe Pipeline;
+    map<int, Pipe> MapOfPipes;
+    map<int, Station> MapOfStations;
+   // int StationsCount=0;
+    //int MapOfPipesCount=0;
+    vector<int> VecOfPipes;
+    vector<int> VecOfStations;
     int Option;
 
     do
@@ -226,25 +436,28 @@ int main()
         switch (Option)
         {
         case 1:
-            AddPipe(Pipeline);
+            AddPipe(Pipeline, MapOfPipes);
             break;
         case 2:
-            AddStation(MainStation);
+            AddStation(MainStation, MapOfStations);
             break;
         case 3:
-            ObjReview(Pipeline, MainStation);
+            ObjReview(MapOfPipes, MapOfStations);
             break;
         case 4:
-            RedactPipe(Pipeline);
+            RedactPipes(MapOfPipes, VecOfPipes);
             break;
         case 5:
-            RedactStation(MainStation);
+            RedactStation(MapOfStations, VecOfStations);
             break;
         case 6:
-            FileSave(Pipeline, MainStation);
+            FileSave(MapOfPipes, MapOfStations);
             break;
         case 7:
-            FileRead(Pipeline, MainStation);
+            FileRead(MapOfPipes, MapOfStations, VecOfPipes, VecOfStations);
+            break;
+        case 8:
+            FindObj(MapOfPipes, MapOfStations, VecOfPipes, VecOfStations);
             break;
         case 0:
             cout << "До свидания!" << endl;
