@@ -20,7 +20,7 @@ public:
 
     void Print()
     {
-        cout <<"Номер трубы: " << PipeName << "\tДлина трубы: " <<PipeLength << " м\tДиаметр: " <<PipeDiametre << "мм\tСостояние: ";
+        cout <<"Название трубы: " << PipeName << "\tДлина трубы: " <<PipeLength << " м\tДиаметр: " <<PipeDiametre << "мм\tСостояние: ";
         if (PipeSign)
         {
             cout << "Починена" << endl;
@@ -79,7 +79,7 @@ void AddPipe(Pipe& Pipeline, map<int, Pipe>& MapOfPipes) // Процедура �
     if (Pipeline.PipeDiametre > 0 && Pipeline.PipeLength > 0)
     { 
         MapOfPipes.emplace(MapOfPipes.size(), Pipeline);
-        //MapOfPipesCount++;
+        cout << "Труба добавлена!" << endl;
     }
 
 }
@@ -109,6 +109,7 @@ void AddStation(Station& MainStation, map<int, Station>& MapOfStations) // Пр�
         if (MainStation.ShopNum > 0)
         { 
             MapOfStations.emplace(MapOfStations.size(), MainStation);
+            cout << "Станция добавлена!" << endl;
         }
 }
 
@@ -117,7 +118,7 @@ void ObjReview(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // П
 {
     Pipe pipe;
     Station station;
-    if (MapOfPipes.size()>0)
+    if (!MapOfPipes.empty())
     {
         cout << "Информация о трубах" << endl;
         for (const auto& p:MapOfPipes)
@@ -126,7 +127,7 @@ void ObjReview(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // П
             pipe.Print();
         } 
     }
-    if (MapOfStations.size()>0)
+    if (!MapOfStations.empty())
     {
         cout << "Информация о компрессорных станциях" << endl;
         for (const auto& s:MapOfStations)
@@ -136,10 +137,8 @@ void ObjReview(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // П
         }
     }
 
-    if (MapOfStations.size()==0 && MapOfPipes.size()==0)
-    {
+    if (MapOfStations.empty() && MapOfPipes.empty())
         cout << "Данные не заданы!" << endl;
-    }
 }
 
 void FileSave(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // Процедура сохранения данных в файл
@@ -163,7 +162,7 @@ void FileSave(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // П�
         OutData << MapOfPipes.size() << endl;
         OutData << MapOfStations.size() << endl;
 
-        if (MapOfPipes.size() > 0)
+        if (!MapOfPipes.empty())
         { 
             for (const auto& p : MapOfPipes)
             {
@@ -171,7 +170,7 @@ void FileSave(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // П�
                 OutData << pipe.PipeName << "\n" << pipe.PipeLength << "\n" << pipe.PipeDiametre << "\n" << pipe.PipeSign << endl;;
             }
         }
-        if (MapOfStations.size() > 0)
+        if (!MapOfStations.empty())
         {
             for (const auto& s : MapOfStations)
             {
@@ -180,14 +179,15 @@ void FileSave(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // П�
             }
         }
             OutData.close();
-        if (MapOfPipes.size() == 0 && MapOfStations.size() == 0)
+        if (MapOfPipes.empty() && MapOfStations.empty())
             cout << "Сохранен пустой файл" << endl;
         else
             cout << "Данные сохранены!" << endl;    
     }
+    OutData.close();
 }
 
-void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations, vector<int>& VecOfPipes, vector<int>& VecOfStations) // Процедура загрузки данных из файла
+void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations) // Процедура загрузки данных из файла
 {
     int PipesAmount;
     int StationsAmount;
@@ -209,7 +209,6 @@ void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations, vect
         cout << "Файл успешно открыт" << endl;
 
         InData >> PipesAmount >> StationsAmount;
-        //cout << PipesAmount << " " << StationsAmount << endl;
 
         if (PipesAmount==0 && StationsAmount==0)
         {
@@ -218,6 +217,7 @@ void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations, vect
 
         else if (PipesAmount>0 && StationsAmount==0)
         {
+            MapOfPipes.clear();
             for (int i=0; i<PipesAmount; i++)
             { 
                 InData.ignore();
@@ -227,6 +227,7 @@ void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations, vect
         }
         else if (StationsAmount>0 && PipesAmount==0)
         {
+            MapOfStations.clear();
             for (int i =0; i<StationsAmount; i++)
             { 
                 InData.ignore();
@@ -237,6 +238,8 @@ void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations, vect
 
         else
         {
+            MapOfPipes.clear();
+            MapOfStations.clear();
         for (int i = 0; i < PipesAmount; i++)
                 {
                     InData.ignore();
@@ -261,7 +264,6 @@ void FindPipe(map<int, Pipe>& MapOfPipes, vector<int>& VecOfPipes)
     bool RepairSign;
     bool Sign;
     string Name;
-    int counter = 0;
     Pipe pipe;
 
     cout << "0.Название\t 1.Признак 'в ремонте'" << endl;
@@ -295,10 +297,11 @@ void FindPipe(map<int, Pipe>& MapOfPipes, vector<int>& VecOfPipes)
             {
                 pipe.Print();
                 VecOfPipes.push_back(p.first);
-               // cout << VecOfPipes[0] << endl;
             }
         }
     }
+    if (VecOfPipes.empty())
+        cout << "Объекты не найдены!" << endl;
 }
 
 void FindStation(map<int, Station>& MapOfStations, vector<int>& VecOfStations)
@@ -307,7 +310,6 @@ void FindStation(map<int, Station>& MapOfStations, vector<int>& VecOfStations)
     string Name;
     bool Sign;
     float ShopProcent;
-    int counter = 0;
     Station station;
 
     cout << "0.Название\t1.Процент незадействованных цехов" << endl;
@@ -342,7 +344,7 @@ void FindStation(map<int, Station>& MapOfStations, vector<int>& VecOfStations)
             }
         }
     }
-    if (counter == 0)
+    if (VecOfStations.empty())
         cout << "Объекты не найдены!" << endl;
 }
 
@@ -382,6 +384,8 @@ void RedactPipes(map<int, Pipe>& MapOfPipes, vector<int>& VecOfPipes)
             MapOfPipes.erase(VecOfPipes[i]);
         }
     }
+
+    cout << "Данные отредактированы!" << endl;
 }
 
 void RedactStation(map<int, Station>& MapOfStations, vector<int>& VecOfStations)
@@ -409,6 +413,8 @@ void RedactStation(map<int, Station>& MapOfStations, vector<int>& VecOfStations)
             MapOfStations.erase(VecOfStations[i]);
         }
     }
+
+    cout << "Данные отредактированы!" << endl;
 }
 
 int main()
@@ -420,8 +426,6 @@ int main()
     Pipe Pipeline;
     map<int, Pipe> MapOfPipes;
     map<int, Station> MapOfStations;
-   // int StationsCount=0;
-    //int MapOfPipesCount=0;
     vector<int> VecOfPipes;
     vector<int> VecOfStations;
     int Option;
@@ -451,7 +455,7 @@ int main()
             FileSave(MapOfPipes, MapOfStations);
             break;
         case 7:
-            FileRead(MapOfPipes, MapOfStations, VecOfPipes, VecOfStations);
+            FileRead(MapOfPipes, MapOfStations);
             break;
         case 8:
             FindObj(MapOfPipes, MapOfStations, VecOfPipes, VecOfStations);
@@ -460,7 +464,7 @@ int main()
             cout << "До свидания!" << endl;
             break;
         default:
-            cout << "Выберите значение от 0 до 7" << endl;
+            cout << "Выберите значение от 0 до 8" << endl;
             break;
         }
     } while (Option != 0);
