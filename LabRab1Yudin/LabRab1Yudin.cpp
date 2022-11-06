@@ -187,7 +187,7 @@ void FileSave(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // П�
     }
 }
 
-void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station> MapOfStations, vector<int>& VecOfPipes, vector<int>& VecOfStations) // Процедура загрузки данных из файла
+void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations, vector<int>& VecOfPipes, vector<int>& VecOfStations) // Процедура загрузки данных из файла
 {
     int PipesAmount;
     int StationsAmount;
@@ -223,7 +223,6 @@ void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station> MapOfStations, vecto
                 InData.ignore();
                 getline(InData, MapOfPipes[i].PipeName);
                 InData >> MapOfPipes[i].PipeLength >> MapOfPipes[i].PipeDiametre >> MapOfPipes[i].PipeSign;
-                //VecOfPipes.push_back(i);
             }
         }
         else if (StationsAmount>0 && PipesAmount==0)
@@ -233,27 +232,25 @@ void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station> MapOfStations, vecto
                 InData.ignore();
                 getline(InData, MapOfStations[i].StationName);
                 InData >> MapOfStations[i].ShopNum >> MapOfStations[i].WorkShopNum >> MapOfStations[i].Efficiency;
-                //VecOfStations.push_back(i);
             }
         }
 
         else
         {
-                for (int i = 0; i < PipesAmount; i++)
+        for (int i = 0; i < PipesAmount; i++)
                 {
-                        InData.ignore();
-                        getline(InData, MapOfPipes[i].PipeName);
-                        InData >> MapOfPipes[i].PipeLength >> MapOfPipes[i].PipeDiametre >> MapOfPipes[i].PipeSign;
-                        //VecOfPipes.push_back(i);
+                    InData.ignore();
+                    getline(InData, MapOfPipes[i].PipeName);
+                    InData >> MapOfPipes[i].PipeLength >> MapOfPipes[i].PipeDiametre >> MapOfPipes[i].PipeSign;
                 }
-                for (int i = 0; i < StationsAmount; i++)
+        for (int i = 0; i < StationsAmount; i++)
                 {
                     InData.ignore();
                     getline(InData, MapOfStations[i].StationName);
                     InData >> MapOfStations[i].ShopNum >> MapOfStations[i].WorkShopNum >> MapOfStations[i].Efficiency;
-                    //VecOfStations.push_back(i);
                 }
         }
+        
     }
     InData.close();
 }
