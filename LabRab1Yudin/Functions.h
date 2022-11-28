@@ -6,29 +6,36 @@
 #include <vector>
 #include "Pipe.h"
 #include "Station.h"
-using namespace std;
+#include <set>
+
 
 template <typename T>
 void Validation(T& input);
 
-void AddPipe(map<int, Pipe>& MapOfPipes);
+void AddPipe(std::map<int, Pipe>& MapOfPipes);
 
-void AddStation(map<int, Station>& MapOfStations);
+void AddStation(std::map<int, Station>& MapOfStations);
 
-void ObjReview(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations);
+void ObjReview(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfStations);
 
-void FileSave(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations);
+void FileSave(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfStations);
 
-void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations);
+void FileRead(std::map<int, Pipe>& MapOfPipes, std::map<int, Station>& MapOfStations);
 
-void FindPipe(map<int, Pipe>& MapOfPipes, vector<int>& VecOfPipes);
+//void FindPipe(map<int, Pipe>& MapOfPipes, vector<int>& VecOfPipes);
 
-void FindStation(map<int, Station>& MapOfStations, vector<int>& VecOfStations);
+//void FindStation(map<int, Station>& MapOfStations, vector<int>& VecOfStations);
 
-void FindObj(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations, vector<int>& VecOfPipes, vector<int>& VecOfStations);
+//void FindObj(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations, vector<int>& VecOfPipes, vector<int>& VecOfStations);
 
-void RedactPipes(map<int, Pipe>& MapOfPipes, vector<int> VecOfPipes);
+//void RedactPipes(map<int, Pipe>& MapOfPipes);
 
-void RedactStation(map<int, Station>& MapOfStations, vector<int> VecOfStations);
+//void RedactStations(map<int, Station>& MapOfStations);
 
+void RedactStation(std::map<int, Station>& MapOfStations);
 
+void RedactPipe(std::map<int, Pipe>& MapOfPipes);
+
+void FilterPipes(std::map<int, Pipe>& MapOfPipes);
+
+void FilterStations(std::map<int, Station>& MapOfStations);

@@ -1,4 +1,6 @@
 #include "Functions.h"
+#include "Pipe.h"
+using namespace std;
 
 template <typename T>
 void Validation(T& input) // Процедура проверки правильности ввода
@@ -14,18 +16,7 @@ void Validation(T& input) // Процедура проверки правильности ввода
 void AddPipe(map<int, Pipe>& MapOfPipes) // Процедура добавления трубы
 {
     Pipe Pipeline;
-    cout << "Введите название трубы" << endl;
-    cin.ignore();
-    getline(cin, Pipeline.PipeName);
-
-    cout << "Введите длину трубы" << endl;
-    Validation(Pipeline.PipeLength);
-
-    cout << "Введите диаметр трубы" << endl;
-    Validation(Pipeline.PipeDiametre);
-
-    cout << "Выберите признак трубы:\n0. В ремонте\n1. Починена" << endl;
-    Validation(Pipeline.PipeSign);
+    cin >> Pipeline;
 
     if (Pipeline.PipeDiametre > 0 && Pipeline.PipeLength > 0)
     {
@@ -38,26 +29,7 @@ void AddPipe(map<int, Pipe>& MapOfPipes) // Процедура добавления трубы
 void AddStation(map<int, Station>& MapOfStations) // Процедура добавления станции
 {
     Station MainStation;
-    cout << "Введите название станции" << endl;
-    cin.ignore();
-    getline(cin, MainStation.StationName);
-
-    cout << "Введите количество цехов" << endl;
-    Validation(MainStation.ShopNum);
-
-    cout << "Введите количество рабочих цехов" << endl;
-    Validation(MainStation.WorkShopNum);
-
-    while (MainStation.WorkShopNum > MainStation.ShopNum)
-    {
-        cout << "Количество рабочих цехов не может превышать общее количество цехов" << endl;
-        cout << "Введите количество рабочих цехов от 0 до " << MainStation.ShopNum << endl;
-        Validation(MainStation.WorkShopNum);
-    }
-
-    cout << "Введите показатель эффективности" << endl;
-    Validation(MainStation.Efficiency);
-
+    cin >> MainStation;
     if (MainStation.ShopNum > 0)
     {
         MapOfStations.emplace(MapOfStations.size(), MainStation);
@@ -76,7 +48,7 @@ void ObjReview(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // Пр
         for (const auto& p : MapOfPipes)
         {
             pipe = p.second;
-            pipe.Print();
+            cout << pipe;
         }
     }
     if (!MapOfStations.empty())
@@ -85,7 +57,7 @@ void ObjReview(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // Пр
         for (const auto& s : MapOfStations)
         {
             station = s.second;
-            station.Print();
+            cout << station;
         }
     }
 
@@ -114,22 +86,14 @@ void FileSave(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // Про
         OutData << MapOfPipes.size() << endl;
         OutData << MapOfStations.size() << endl;
 
-        if (!MapOfPipes.empty())
-        {
             for (const auto& p : MapOfPipes)
             {
-                pipe = p.second;
-                OutData << pipe.PipeName << "\n" << pipe.PipeLength << "\n" << pipe.PipeDiametre << "\n" << pipe.PipeSign << endl;;
+                OutData << p.second;
             }
-        }
-        if (!MapOfStations.empty())
-        {
             for (const auto& s : MapOfStations)
             {
-                station = s.second;
-                OutData << station.StationName << "\n" << station.ShopNum << "\n" << station.WorkShopNum << "\n" << station.Efficiency << endl;
+                OutData << s.second;
             }
-        }
         OutData.close();
         if (MapOfPipes.empty() && MapOfStations.empty())
             cout << "Сохранен пустой файл" << endl;
@@ -166,43 +130,17 @@ void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations) // П
         {
             cout << "Файл не содержит данных" << endl;
         }
-
-        else if (PipesAmount > 0 && StationsAmount == 0)
-        {
-            MapOfPipes.clear();
-            for (int i = 0; i < PipesAmount; i++)
-            {
-                InData.ignore();
-                getline(InData, MapOfPipes[i].PipeName);
-                InData >> MapOfPipes[i].PipeLength >> MapOfPipes[i].PipeDiametre >> MapOfPipes[i].PipeSign;
-            }
-        }
-        else if (StationsAmount > 0 && PipesAmount == 0)
-        {
-            MapOfStations.clear();
-            for (int i = 0; i < StationsAmount; i++)
-            {
-                InData.ignore();
-                getline(InData, MapOfStations[i].StationName);
-                InData >> MapOfStations[i].ShopNum >> MapOfStations[i].WorkShopNum >> MapOfStations[i].Efficiency;
-            }
-        }
-
         else
         {
             MapOfPipes.clear();
             MapOfStations.clear();
             for (int i = 0; i < PipesAmount; i++)
             {
-                InData.ignore();
-                getline(InData, MapOfPipes[i].PipeName);
-                InData >> MapOfPipes[i].PipeLength >> MapOfPipes[i].PipeDiametre >> MapOfPipes[i].PipeSign;
+                InData >> MapOfPipes[i];
             }
             for (int i = 0; i < StationsAmount; i++)
             {
-                InData.ignore();
-                getline(InData, MapOfStations[i].StationName);
-                InData >> MapOfStations[i].ShopNum >> MapOfStations[i].WorkShopNum >> MapOfStations[i].Efficiency;
+                InData >> MapOfStations[i];
             }
         }
 
@@ -210,165 +148,510 @@ void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations) // П
     InData.close();
 }
 
-void FindPipe(map<int, Pipe>& MapOfPipes, vector<int>& VecOfPipes)
+//void FindPipe(map<int, Pipe>& MapOfPipes, vector<int>& VecOfPipes)
+//{
+//    VecOfPipes.clear();
+//    bool RepairSign;
+//    bool Sign;
+//    string Name;
+//    Pipe pipe;
+//
+//    cout << "0.Название\t 1.Признак 'в ремонте'" << endl;
+//    Validation(Sign);
+//    if (!Sign)
+//    {
+//        cout << "Введите название трубы" << endl;
+//        cin.ignore();
+//        getline(cin, Name);
+//
+//        for (const auto& p : MapOfPipes)
+//        {
+//            pipe = p.second;
+//            string PipeName = pipe.PipeName;
+//            if (PipeName.find(Name) >= 0 && PipeName.find(Name) <= PipeName.length())
+//            {
+//                cout << pipe;
+//                VecOfPipes.push_back(p.first);
+//            }
+//        }
+//    }
+//    else
+//    {
+//        cout << "Введите признак:\t0.В ремонте\t1. Починена" << endl;
+//        Validation(RepairSign);
+//        for (const auto& p : MapOfPipes)
+//        {
+//            pipe = p.second;
+//            if (pipe.PipeSign == RepairSign)
+//            {
+//                cout << pipe;
+//                VecOfPipes.push_back(p.first);
+//            }
+//        }
+//    }
+//    if (VecOfPipes.empty())
+//        cout << "Объекты не найдены!" << endl;
+//}
+//
+//void FindStation(map<int, Station>& MapOfStations, vector<int>& VecOfStations)
+//{
+//    VecOfStations.clear();
+//    string Name;
+//    bool Sign;
+//    float ShopProcent;
+//    Station station;
+//
+//    cout << "0.Название\t1.Процент незадействованных цехов" << endl;
+//    Validation(Sign);
+//    if (!Sign)
+//    {
+//        cout << "Введите название станции" << endl;
+//        cin.ignore();
+//        getline(cin, Name);
+//
+//        for (const auto& s : MapOfStations)
+//        {
+//            station = s.second;
+//            if (station.StationName.find(Name) >= 0 && station.StationName.find(Name) <= station.StationName.length())
+//            {
+//                cout << VecOfStations.size() + 1;
+//                cout << station;
+//                VecOfStations.push_back(s.first);
+//            }
+//        }
+//    }
+//    else
+//    {
+//        cout << "Введите процент незадействованных цехов" << endl;
+//        Validation(ShopProcent);
+//        for (const auto& s : MapOfStations)
+//        {
+//            station = s.second;
+//            if (((station.ShopNum - station.WorkShopNum) / station.ShopNum) * 100 >= ShopProcent)
+//            {
+//                cout << station;
+//                VecOfStations.push_back(s.first);
+//            }
+//        }
+//    }
+//    if (VecOfStations.empty())
+//        cout << "Объекты не найдены!" << endl;
+//}
+//
+//void FindObj(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations, vector<int>& VecOfPipes, vector<int>& VecOfStations)
+//{
+//    bool Object;
+//    cout << "Выберите объекты для поиска:\n0.Трубы\t1.Станции" << endl;
+//    Validation(Object);
+//    cout << "Выберите признак для поиска:" << endl;
+//    if (!Object)
+//        FindPipe(MapOfPipes, VecOfPipes);
+//    else
+//        FindStation(MapOfStations, VecOfStations);
+//}
+//
+int ChooseID(set<int> keys)
 {
-    VecOfPipes.clear();
-    bool RepairSign;
-    bool Sign;
-    string Name;
-    Pipe pipe;
-
-    cout << "0.Название\t 1.Признак 'в ремонте'" << endl;
-    Validation(Sign);
-    if (!Sign)
+    int key=-1;
+    cout << "Введите ID объекта, имеющийся в списке" << endl;
+    while (true)
     {
-        cout << "Введите название трубы" << endl;
-        cin.ignore();
-        getline(cin, Name);
-
+        Validation(key);
+        if (keys.find(key - 1) == keys.end())
+            cout << "Введите существующий id" << endl;
+        else
+            break;
+    }
+    return key-1;
+}
+void RedactPipe(map<int, Pipe>& MapOfPipes)
+{
+    set<int> keys;
+    int key;
+    bool choise;
+    if (!MapOfPipes.empty())
+    {
         for (const auto& p : MapOfPipes)
         {
-            pipe = p.second;
-            string PipeName = pipe.PipeName;
-            if (PipeName.find(Name) >= 0 && PipeName.find(Name) <= PipeName.length())
-            {
-                cout << PipeName.find(Name) << endl;
-                pipe.Print();
-                VecOfPipes.push_back(p.first);
-            }
+            cout << "ID трубы: " << p.first + 1 << endl;
+            keys.insert(p.first);
+            cout << p.second << endl;
         }
+
+       // cout << "Введите id трубы, которую хотите изменить" << endl;
+        key = ChooseID(keys);
+
+        cout << "Выберите действие: 0.Удалить 1. Изменить" << endl;
+        Validation(choise);
+        if (choise)
+            MapOfPipes[key].RedactRepairSign();
+        else
+            MapOfPipes.erase(key);
     }
     else
-    {
-        cout << "Введите признак:\t0.В ремонте\t1. Починена" << endl;
-        Validation(RepairSign);
-        for (const auto& p : MapOfPipes)
-        {
-            pipe = p.second;
-            if (pipe.PipeSign == RepairSign)
-            {
-                pipe.Print();
-                VecOfPipes.push_back(p.first);
-            }
-        }
-    }
-    if (VecOfPipes.empty())
-        cout << "Объекты не найдены!" << endl;
+        cout << "Трубы не заданы!" << endl;
 }
 
-void FindStation(map<int, Station>& MapOfStations, vector<int>& VecOfStations)
+void RedactStation(map<int, Station>& MapOfStations)
 {
-    VecOfStations.clear();
-    string Name;
-    bool Sign;
-    float ShopProcent;
-    Station station;
-
-    cout << "0.Название\t1.Процент незадействованных цехов" << endl;
-    Validation(Sign);
-    if (!Sign)
+    if (!MapOfStations.empty())
     {
-        cout << "Введите название станции" << endl;
-        cin.ignore();
-        getline(cin, Name);
-
+        int key;
+        set<int>keys;
+        bool choise;
         for (const auto& s : MapOfStations)
         {
-            station = s.second;
-            if (station.StationName.find(Name) >= 0 && station.StationName.find(Name) <= station.StationName.length())
-            {
-                station.Print();
-                VecOfStations.push_back(s.first);
-            }
+            cout << "ID станции: " << s.first + 1 << endl;
+            keys.insert(s.first);
+            cout << s.second << endl;
+
         }
+
+       // cout << "Введите id станции, которую хотите изменить" << endl;
+        key = ChooseID(keys);
+        cout << "Выберите действие: 0.Удалить 1. Изменить" << endl;
+        Validation(choise);
+        if (choise)
+            MapOfStations[key].RedactWorkShopNum();
+        else
+            MapOfStations.erase(key);
     }
     else
+        cout << "Станции не заданы!" << endl;
+}
+
+set<int> RenewIDs(set<int> ids)
+{
+    set<int> NewIDs;
+    int id;
+
+    cout << "Введите id выбранных объектов. Для выхода введите 0" << endl;
+    while (true)
     {
-        cout << "Введите процент незадействованных цехов" << endl;
-        Validation(ShopProcent);
-        for (const auto& s : MapOfStations)
+        Validation(id);
+
+        if (id == 0)
+            break;
+        else 
         {
-            station = s.second;
-            if (((station.ShopNum - station.WorkShopNum) / station.ShopNum) * 100 >= ShopProcent)
-            {
-                station.Print();
-                VecOfStations.push_back(s.first);
-            }
+            if ((ids.find(id - 1) != ids.end()) && (NewIDs.find(id-1) == NewIDs.end()))
+                NewIDs.insert(id - 1);
+            else
+                cout << "Введенный id не найден либо введен повторно" << endl;
         }
     }
-    if (VecOfStations.empty())
-        cout << "Объекты не найдены!" << endl;
+    return NewIDs;
 }
 
-void FindObj(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations, vector<int>& VecOfPipes, vector<int>& VecOfStations)
+void FilterPipes(map<int, Pipe>& MapOfPipes)
 {
-    bool Object;
-    cout << "Выберите объекты для поиска:\n0.Трубы\t1.Станции" << endl;
-    Validation(Object);
-    cout << "Выберите признак для поиска:" << endl;
-    if (!Object)
-        FindPipe(MapOfPipes, VecOfPipes);
-    else
-        FindStation(MapOfStations, VecOfStations);
-}
+    int choise;
+    bool action;
+    string name;
+    set<int> keys;
 
-void RedactPipes(map<int, Pipe>& MapOfPipes, vector<int> VecOfPipes)
-{
-    cout << "Выберите признак для поиска труб" << endl;
-    FindPipe(MapOfPipes, VecOfPipes);
-    bool RepairSign;
-    bool Option;
-    if (!VecOfPipes.empty())
-    { 
-        cout << "Веберите действие:\n0.Удалить\t1.Редактировать" << endl;
-        Validation(Option);
-        if (Option)
+    if (!MapOfPipes.empty())
+    {
+        cout << "Выберите фильтр: 1.По имени 2.В ремонте 3.Починена" << endl;
+        do
         {
-            cout << "Выберите признак 'в ремонте'\t0.В ремонте\t1.Починена" << endl;
-            Validation(RepairSign);
-            for (int i = 0; i < VecOfPipes.size(); i++)
+            Validation(choise);
+            switch (choise)
             {
-                MapOfPipes[VecOfPipes[i]].PipeSign = RepairSign;
+            case 1:
+                cout << "Введите название трубы" << endl;
+                cin.ignore();
+                getline(cin, name);
+
+                for (const auto& p : MapOfPipes)
+                {
+                    if (p.second.PipeName.find(name) != p.second.PipeName.npos)
+                    {
+                        cout << "ID трубы: " << p.first + 1 << endl;
+                        keys.insert(p.first);
+                        cout << p.second;
+                    }
+
+                }
+                break;
+            case 2:
+                for (const auto& p : MapOfPipes)
+                {
+                    if (!p.second.PipeSign)
+                    {
+                        cout << "ID трубы: " << p.first + 1 << endl;
+                        keys.insert(p.first);
+                        cout << p.second;
+                    }
+
+                }
+                break;
+            case 3:
+                for (const auto& p : MapOfPipes)
+                {
+                    if (p.second.PipeSign)
+                    {
+                        cout << "ID трубы: " << p.first + 1 << endl;
+                        keys.insert(p.first);
+                        cout << p.second;
+                    }
+                }
+                break;
+            default:
+                cout << "Выберите число от 1 до 3" << endl;
+                break;
+
+            }
+        } while (choise < 1 || choise>3);
+
+        cout << "Выберите дальнейшее действие\t0.Выход\t1.Редактировать" << endl;
+        Validation(action);
+
+        if (action)
+        {
+            cout << "Выберите действие\t0.Выбрать все\t1.Выбрать вручную" << endl;
+            Validation(action);
+            if (action)
+                keys = RenewIDs(keys);
+
+            cout << "Выберите дейтсвие\t0.Удалить\t1.Редактировать" << endl;
+            Validation(choise);
+
+            if (!choise)
+            {
+                for (int p : keys)
+                    MapOfPipes.erase(p);
+            }
+            else
+            {
+                for (int p : keys)
+                    MapOfPipes[p].RedactRepairSign();
             }
         }
         else
-        {
-            for (int i = 0; i < VecOfPipes.size(); i++)
-            {
-                MapOfPipes.erase(VecOfPipes[i]);
-            }
-        }
-
-        cout << "Данные отредактированы!" << endl;
+            return;
     }
+    else
+        cout << "Трубы не заданы!" << endl;
 }
-
-void RedactStation(map<int, Station>& MapOfStations, vector<int> VecOfStations)
+void FilterStations(map<int, Station>& MapOfStations)
 {
-    cout << "Выберите признак для поиска станций" << endl;
-    FindStation(MapOfStations, VecOfStations);
-    int WorkShopNum;
-    bool Option;
-    if (!VecOfStations.empty())
+    int choise;
+    bool action;
+    string name;
+    int RunWorkShops;
+    set<int> keys;
+
+    if (!MapOfStations.empty())
     {
-        cout << "Веберите действие:\n0.Удалить\t1.Редактировать" << endl;
-        Validation(Option);
-        if (Option)
+        cout << "Выберите фильтр: 1.По имени 2.Процент рабочих цехов <= 3.Процент рабочих цехов >=" << endl;
+        do
         {
-            cout << "Введите количество рабочих цехов" << endl;
-            Validation(WorkShopNum);
-            for (int i = 0; i < VecOfStations.size(); i++)
+            Validation(choise);
+            switch (choise)
             {
-                MapOfStations[VecOfStations[i]].WorkShopNum = WorkShopNum;
+            case 1:
+                cout << "Введите название трубы" << endl;
+                cin.ignore();
+                getline(cin, name);
+
+                for (const auto& p : MapOfStations)
+                {
+                    if (p.second.StationName.find(name) != p.second.StationName.npos)
+                    {
+                        cout << "ID трубы: " << p.first + 1 << endl;
+                        keys.insert(p.first);
+                        cout << p.second;
+                    }
+                }
+                break;
+            case 2:
+                cout << "Введите процент рабочих цехов" << endl;
+                Validation(RunWorkShops);
+                for (const auto& p : MapOfStations)
+                {
+                    if ((p.second.WorkShopNum / p.second.ShopNum) <= RunWorkShops)
+                    {
+                        cout << "ID станции: " << p.first + 1 << endl;
+                        keys.insert(p.first);
+                        cout << p.second;
+                    }
+
+                }
+                break;
+            case 3:
+                cout << "Введите процент рабочих цехов" << endl;
+                Validation(RunWorkShops);
+                for (const auto& p : MapOfStations)
+                {
+                    if ((p.second.WorkShopNum / p.second.ShopNum) >= RunWorkShops)
+                    {
+                        cout << "ID станции: " << p.first + 1 << endl;
+                        keys.insert(p.first);
+                        cout << p.second;
+                    }
+                }
+                break;
+            default:
+                cout << "Выберите число от 1 до 3" << endl;
+                break;
+
+            }
+        } while (choise < 1 || choise>3);
+
+        cout << "Выберите дальнейшее действие\t0.Выход\t1.Редактировать" << endl;
+        Validation(action);
+
+        if (action)
+        {
+            cout << "Выберите действие\t0.Выбрать все\t1.Выбрать вручную" << endl;
+            Validation(action);
+            if (action)
+                keys = RenewIDs(keys);
+
+            cout << "Выберите дейтсвие\t0.Удалить\t1.Редактировать" << endl;
+            Validation(choise);
+
+            if (!choise)
+            {
+                for (int p : keys)
+                    MapOfStations.erase(p);
+            }
+            else
+            {
+                for (int p : keys)
+                    MapOfStations[p].RedactWorkShopNum();
             }
         }
         else
-        {
-            for (int i = 0; i < VecOfStations.size(); i++)
-            {
-                MapOfStations.erase(VecOfStations[i]);
-            }
-        }
-        cout << "Данные отредактированы!" << endl;
+            return;
     }
+    else
+        cout << "Станции не заданы!" << endl;
 }
+//void RedactPipes(map<int, Pipe>& MapOfPipes)
+//{
+//    vector<int> VecOfPipes;
+//    cout << "Выберите признак для поиска труб" << endl;
+//    FindPipe(MapOfPipes, VecOfPipes);
+//    bool RepairSign;
+//    bool Option;
+//    bool Amount;
+//    int Number=-1;
+//    vector<int> Keys;
+//    if (!VecOfPipes.empty())
+//    {
+//        cout << "Выберите количество изменяемых объектов\t0.Все найденные\t1.По выбору" << endl;
+//        Validation(Amount);
+//        if (Amount)
+//        {
+//            cout << "Выберите номера объектов" << endl;
+//            while (Number != 0)
+//            {
+//                Validation(Number);
+//                if (Number > 0)
+//                {
+//                    if (Number <= VecOfPipes.size() && find(Keys.begin(), Keys.end(), Number-1)==Keys.end())
+//                        Keys.push_back(Number - 1);
+//                    else
+//                        cout << "Выберите номер от 1 до " << VecOfPipes.size()<< ", не введенный ранее" << endl;
+//                }
+//                
+//            }
+//            
+//        }
+//        else
+//        {
+//            for (int i = 0; i < VecOfPipes.size(); i++)
+//                Keys.push_back(VecOfPipes[i]);
+//        }
+//           
+//
+//            cout << "Веберите действие:\n0.Удалить\t1.Редактировать" << endl;
+//            Validation(Option);
+//            if (Option)
+//            {
+//                for (int i = 0; i < Keys.size(); i++)
+//                    MapOfPipes[Keys[i]].RedactRepairSign();
+//                /*cout << "Выберите признак 'в ремонте'\t0.В ремонте\t1.Починена" << endl;
+//                Validation(RepairSign);
+//                for (int i = 0; i < Keys.size(); i++)
+//                {
+//                    MapOfPipes[Keys[i]].PipeSign = RepairSign;
+//                }*/
+//            }
+//
+//        
+//        else
+//        {
+//            for (int i = 0; i < Keys.size(); i++)
+//            {
+//                MapOfPipes.erase(Keys[i]);
+//            }
+//        }
+//
+//        cout << "Данные отредактированы!" << endl;
+//    }
+//}
+//
+//void RedactStations(map<int, Station>& MapOfStations)
+//{
+//    vector<int> VecOfStations;
+//    cout << "Выберите признак для поиска станций" << endl;
+//    FindStation(MapOfStations, VecOfStations);
+//    int WorkShopNum;
+//    bool Option;
+//    bool Amount;
+//    int Number=-1;
+//    vector<int> Keys;
+//
+//    if (!VecOfStations.empty())
+//    {
+//        cout << "Выберите количество изменяемых объектов\t0.Все найденные\t1.По выбору" << endl;
+//        Validation(Amount);
+//        if (Amount)
+//        {
+//            cout << "Выберите номера объектов" << endl;
+//            while (Number != 0)
+//            {
+//                Validation(Number);
+//                if (Number > 0)
+//                {
+//                    if (Number <= VecOfStations.size() && find(Keys.begin(), Keys.end(), Number-1) == Keys.end())
+//                        Keys.push_back(Number - 1);
+//                    else
+//                        cout << "Выберите номер от 1 до " << VecOfStations.size() <<", не введенный ранее" << endl;
+//                }
+//                
+//            }
+//        }
+//        else
+//        {
+//            for (int i = 0; i < VecOfStations.size(); i++)
+//                Keys.push_back(VecOfStations[i]);
+//        }
+//        cout << "Веберите действие:\n0.Удалить\t1.Редактировать" << endl;
+//        Validation(Option);
+//        if (Option)
+//        {
+//            /*cout << "Введите количество рабочих цехов" << endl;
+//            Validation(WorkShopNum);
+//            for (int i = 0; i < Keys.size(); i++)
+//            {
+//                MapOfStations[Keys[i]].WorkShopNum = WorkShopNum;
+//            }*/
+//            for (int i = 0; i < Keys.size(); i++)
+//                MapOfStations[Keys[i]].RedactWorkShopNum();
+//        }
+//        else
+//        {
+//            for (int i = 0; i < Keys.size(); i++)
+//            {
+//                MapOfStations.erase(Keys[i]);
+//            }
+//        }
+//        cout << "Данные отредактированы!" << endl;
+//    }
+//}
+
+

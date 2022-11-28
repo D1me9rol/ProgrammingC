@@ -1,14 +1,19 @@
 #pragma once
 #include <string>
 #include <iostream>
-using namespace std;
+
 
 class Station
 {
 public:
-	    string StationName;
+	    std::string StationName;
 	    int ShopNum, WorkShopNum, Efficiency;
 	
-		void Print();
+		void RedactWorkShopNum();
+
+		friend std::istream& operator >> (std::istream& in, Station& MainStation);
+		friend std::ostream& operator << (std::ostream& out, const Station& MainStation);
+		friend std::ifstream& operator >> (std::ifstream& fin, Station& MainStation);
+		friend std::ofstream& operator << (std::ofstream& fout, const Station& MainStation);
 };
 
