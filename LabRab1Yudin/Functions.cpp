@@ -35,6 +35,7 @@ void AddStation(map<int, Station>& MapOfStations) // Процедура добавления станци
     {
         MapOfStations.emplace(MapOfStations.size(), MainStation);
         cout << "Станция добавлена!" << endl;
+
     }
 }
 

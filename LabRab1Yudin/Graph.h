@@ -16,7 +16,7 @@ public:
 
 	
 
-	void AddArc(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfStations);
+	void AddArc(std::map<int, Pipe>& MapOfPipes, std::map<int, Station> MapOfStations);
 	void FillAdj(std::map<int, Station> MapOfStations);
 	void FillIncidence(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfStations);
 

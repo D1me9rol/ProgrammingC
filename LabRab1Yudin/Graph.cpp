@@ -17,14 +17,26 @@ using namespace std;
 
 void Graph::FillAdj(std::map<int, Station> MapOfStations)
 {
-	for (int i = 0; i < MapOfStations.size(); i++)
-		Adj.push_back(vector<int>(MapOfStations.size()));
+
+    for (int i = Adj.size(); i < MapOfStations.size(); i++)
+        Adj.push_back(vector<int>(MapOfStations.size()-1));
+    if (MapOfStations.size()>Adj[0].size())
+    {
+        for (int i = 0; i < MapOfStations.size(); i++)
+            Adj[i].push_back(0);
+    }
+		
 }
 
 void Graph::FillIncidence(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfStations)
 {
-	for (int i = 0; i < MapOfPipes.size(); i++)
-		Incidence.push_back(vector<int>(MapOfStations.size()));
+	for (int i = Incidence.size(); i < MapOfPipes.size(); i++)
+		Incidence.push_back(vector<int>(MapOfStations.size()-1));
+    if(MapOfStations.size()>Incidence[0].size())
+    {
+        for (int i = 0; i < MapOfPipes.size(); i++)
+            Incidence[i].push_back(0);
+    }
 }
 
 
@@ -43,7 +55,7 @@ int GetID(set<int> keys)
     return key - 1;
 }
 
-void Graph::AddArc(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfStations)
+void Graph::AddArc(std::map<int, Pipe>& MapOfPipes, std::map<int, Station> MapOfStations)
 {
     int FirstStationID;
     int SecondStationID;
@@ -55,10 +67,8 @@ void Graph::AddArc(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfS
 
     if (!MapOfStations.empty())
     {
-        if (Adj.empty())
-            FillAdj(MapOfStations);
-        if (Incidence.empty())
-            FillIncidence(MapOfPipes, MapOfStations);
+        FillAdj(MapOfStations);
+        FillIncidence(MapOfPipes, MapOfStations);
 
         cout << "Список станций" << endl;
 
@@ -83,29 +93,34 @@ void Graph::AddArc(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfS
             Validation(PipeDiametre);
 
             bool Connected = 0;
-            bool Used = 0;
+            bool Unused = 1;
+            int Line;
             for (const auto& p : MapOfPipes)
             {
-
-
                 if (p.second.PipeDiametre == PipeDiametre)
                 {
-                    for (int i = 0; i < MapOfStations.size() - 1; i++)
-                        if (Incidence[p.first][i] == 1)
+                    Line = p.first;
+                    for (int i = 0; i < MapOfStations.size(); i++)
+                        if (Incidence[p.first][i] > 0)
                         {
-                            Used = true;
+                            Unused = 0;
+                            Line = -1;
                             break;
                         }
-                    if (!Used)
+                
+                    if (Line > -1)
                     {
                         Adj[FirstStationID][SecondStationID] = 1;
                         Incidence[p.first][FirstStationID] = 1;
                         Incidence[p.first][SecondStationID] = 2;
                         Connected = true;
                         break;
+
                     }
                 }
+                    
             }
+                   
             if (!Connected)
             {
                 bool Choise;
@@ -113,17 +128,20 @@ void Graph::AddArc(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfS
                 Validation(Choise);
                 if (Choise)
                 {
-                    Adj.push_back(vector<int>(MapOfStations.size()));
                     Incidence.push_back(vector<int>(MapOfStations.size()));
+                    /*for (int i = 0; i < MapOfPipes.size(); i++)
+                        Incidence[i].push_back(0);*/
                     AddPipe(MapOfPipes);
                     Adj[FirstStationID][SecondStationID] = 1;
                     Incidence[MapOfPipes.size() - 1][FirstStationID] = 1;
                     Incidence[MapOfPipes.size() - 1][SecondStationID] = 2;
                 }
+                else
+                    return;
+                    //Incidence[MapOfPipes.size()-1].push_back(0);
 
             }
         }
-        /**/
     }
     else
         cout << "Станции не заданы" << endl;
