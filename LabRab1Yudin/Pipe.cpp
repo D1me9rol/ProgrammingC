@@ -12,6 +12,8 @@ void Pipe::RedactRepairSign()
 
 std::istream& operator >> (std::istream& in, Pipe& Pipeline) {
 	
+	int Diametre=0;
+
 	cout << "Введите название трубы" << endl;
 	cin.ignore();
 	getline(cin, Pipeline.PipeName);
@@ -19,8 +21,19 @@ std::istream& operator >> (std::istream& in, Pipe& Pipeline) {
 	cout << "Введите длину трубы" << endl;
 	Validation(Pipeline.PipeLength);
 
-	cout << "Введите диаметр трубы" << endl;
-	Validation(Pipeline.PipeDiametre);
+	cout << "Выберите диаметр трубы: 1.500мм 2.700мм 3.1400мм" << endl;
+	
+	while (Diametre < 1 || Diametre>3)
+	{
+		cout << "Введите число от 1 до 3" << endl;
+		Validation(Diametre);
+	}
+	if (Diametre == 1)
+		Pipeline.PipeDiametre = 500;
+	else if (Diametre == 2)
+		Pipeline.PipeDiametre = 700;
+	else
+		Pipeline.PipeDiametre = 1400;
 
 	cout << "Выберите признак трубы:\n0. В ремонте\n1. Починена" << endl;
 	Validation(Pipeline.PipeSign);

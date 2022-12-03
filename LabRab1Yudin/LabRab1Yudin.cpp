@@ -5,6 +5,7 @@
 #include "Pipe.h"
 #include "Station.h"
 #include "Functions.h"
+#include "Graph.h"
 
 using namespace std;
 
@@ -13,7 +14,7 @@ using namespace std;
 void ShowMenu() // Вывод меню
 {
     cout << "Меню\n";
-    cout << "1. Добавить трубу\n2. Добавить КС\n3. Просмотр всех объектов\n4. Редактировать трубу\n5. Редактировать КС\n6. Сохранить\n7. Загрузить\n8. Фильтр труб\n9. Фильтр КС\n0. Выход "<< endl;
+    cout << "1. Добавить трубу\n2. Добавить КС\n3. Просмотр всех объектов\n4. Редактировать трубу\n5. Редактировать КС\n6. Сохранить\n7. Загрузить\n8. Фильтр труб\n9. Фильтр КС\n10. Соединить станции\n0. Выход "<< endl;
     cout << "Выберите номер действия" << endl;
 }
 
@@ -25,6 +26,7 @@ int main()
      
     map<int, Pipe> MapOfPipes;
     map<int, Station> MapOfStations;
+    Graph ConnectedStations;
     int Option;
 
     do
@@ -59,6 +61,10 @@ int main()
             break;
         case 9:
             FilterStations(MapOfStations);
+            break;
+        case 10:
+            ConnectStations(MapOfStations, MapOfPipes, ConnectedStations);
+            break;
         case 0:
             cout << "До свидания!" << endl;
             break;

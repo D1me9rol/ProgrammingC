@@ -40,7 +40,7 @@ std::istream& operator >> (std::istream& in, Station& MainStation)
 
 	return in;
 }
-
+//friend std::ostream& operator << (std::ostream& out, const Station& MainStation);
 std::ostream& operator<<(std::ostream& out, const Station& MainStation)
 {
 	//cout << "ID трубы:" << MainStation

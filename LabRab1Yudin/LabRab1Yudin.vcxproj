@@ -128,12 +128,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Functions.cpp" />
+    <ClCompile Include="Graph.cpp" />
     <ClCompile Include="LabRab1Yudin.cpp" />
     <ClCompile Include="Pipe.cpp" />
     <ClCompile Include="Station.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Functions.h" />
+    <ClInclude Include="Graph.h" />
     <ClInclude Include="Pipe.h" />
     <ClInclude Include="Station.h" />
   </ItemGroup>

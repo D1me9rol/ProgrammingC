@@ -7,6 +7,7 @@
 #include "Pipe.h"
 #include "Station.h"
 #include <set>
+#include "Graph.h"
 
 
 template <typename T>
@@ -22,16 +23,6 @@ void FileSave(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfStatio
 
 void FileRead(std::map<int, Pipe>& MapOfPipes, std::map<int, Station>& MapOfStations);
 
-//void FindPipe(map<int, Pipe>& MapOfPipes, vector<int>& VecOfPipes);
-
-//void FindStation(map<int, Station>& MapOfStations, vector<int>& VecOfStations);
-
-//void FindObj(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations, vector<int>& VecOfPipes, vector<int>& VecOfStations);
-
-//void RedactPipes(map<int, Pipe>& MapOfPipes);
-
-//void RedactStations(map<int, Station>& MapOfStations);
-
 void RedactStation(std::map<int, Station>& MapOfStations);
 
 void RedactPipe(std::map<int, Pipe>& MapOfPipes);
@@ -39,3 +30,6 @@ void RedactPipe(std::map<int, Pipe>& MapOfPipes);
 void FilterPipes(std::map<int, Pipe>& MapOfPipes);
 
 void FilterStations(std::map<int, Station>& MapOfStations);
+
+void ConnectStations(std::map<int, Station> MapOfStations, std::map<int, Pipe>& MapOfPipes, Graph& ConnectedStations);
+
