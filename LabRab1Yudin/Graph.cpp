@@ -4,22 +4,11 @@
 using namespace std;
 
 
-//std::ostream& operator<< (std::ostream& out, const Graph& ConnectedStations)
-//{
-//    for (int i = 0; i < ConnectedStations.Adj.size(); i++)
-//    {
-//        for (int j = 0; j < ConnectedStations.Adj[i].size(); j++)
-//            cout << ConnectedStations.Adj[i][j] << " ";
-//        cout << "\n";
-//    }
-//    return out;
-//}
-
 void Graph::FillAdj(std::map<int, Station> MapOfStations)
 {
 
     for (int i = Adj.size(); i < MapOfStations.size(); i++)
-        Adj.push_back(vector<int>(MapOfStations.size()-1));
+        Adj.push_back(vector<bool>(MapOfStations.size()-1));
     if (MapOfStations.size()>Adj[0].size())
     {
         for (int i = 0; i < MapOfStations.size(); i++)
@@ -43,7 +32,6 @@ void Graph::FillIncidence(std::map<int, Pipe> MapOfPipes, std::map<int, Station>
 int GetID(set<int> keys)
 {
     int key = -1;
-    cout << "Введите ID объекта, имеющийся в списке" << endl;
     while (true)
     {
         Validation(key);
@@ -63,10 +51,7 @@ void Graph::AddArc(std::map<int, Pipe>& MapOfPipes, std::map<int, Station> MapOf
     set<int>Pipelines;
     int PipeDiametre;
 
-    
 
-    if (!MapOfStations.empty())
-    {
         FillAdj(MapOfStations);
         FillIncidence(MapOfPipes, MapOfStations);
 
@@ -84,7 +69,7 @@ void Graph::AddArc(std::map<int, Pipe>& MapOfPipes, std::map<int, Station> MapOf
         SecondStationID = GetID(Stations);
         if (FirstStationID == SecondStationID || Adj[FirstStationID][SecondStationID] == 1)
         {
-            cout << "Станции уже соединены" << endl;
+            cout << "Станции уже соединены"<< endl;
             return;
         }
         else
@@ -129,8 +114,6 @@ void Graph::AddArc(std::map<int, Pipe>& MapOfPipes, std::map<int, Station> MapOf
                 if (Choise)
                 {
                     Incidence.push_back(vector<int>(MapOfStations.size()));
-                    /*for (int i = 0; i < MapOfPipes.size(); i++)
-                        Incidence[i].push_back(0);*/
                     AddPipe(MapOfPipes);
                     Adj[FirstStationID][SecondStationID] = 1;
                     Incidence[MapOfPipes.size() - 1][FirstStationID] = 1;
@@ -138,12 +121,56 @@ void Graph::AddArc(std::map<int, Pipe>& MapOfPipes, std::map<int, Station> MapOf
                 }
                 else
                     return;
-                    //Incidence[MapOfPipes.size()-1].push_back(0);
 
             }
         }
+    
+}
+
+void Graph::TopologicalSortUtil(int v, std::vector<int>& Vertexes, vector <bool>& visited)
+{
+    bool used = 0;
+    
+    if (!visited[v])
+    {
+        for (int i = 0; i < Adj.size(); i++)
+        {
+            if (!visited[i] && Adj[v][i] == 1)
+            {
+                TopologicalSortUtil(i, Vertexes, visited);
+            }
+        }
+
+        visited[v] = 1;
+
+        for (int p : Vertexes)
+            if (p == v)
+                used == 1;
+        if (!used)
+            Vertexes.push_back(v);
     }
-    else
-        cout << "Станции не заданы" << endl;
+}
+
+void Graph::TopologicalSort(std::map<int, Station> MapOfStations)
+{
+    vector<int> Vertexes;
+    vector<bool>visited;
+    int v = MapOfStations.size();
+    
+        for (const auto& p : MapOfStations)
+            visited.push_back(false);
+
+        for (const auto& p : MapOfStations)
+        {
+            if (!visited[p.first])
+                TopologicalSortUtil(p.first, Vertexes, visited);
+        }
+
+        reverse(Vertexes.begin(), Vertexes.end());
+        for (int p : Vertexes)
+            cout << p + 1 << " ";
+        cout << "\n";
+    
+    
 }
 

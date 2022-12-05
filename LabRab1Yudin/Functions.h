@@ -33,3 +33,4 @@ void FilterStations(std::map<int, Station>& MapOfStations);
 
 void ConnectStations(std::map<int, Station> MapOfStations, std::map<int, Pipe>& MapOfPipes, Graph& ConnectedStations);
 
+void TopologicalSort(std::map<int, Station> MapOfStations, Graph& ConnectedStations);

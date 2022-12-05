@@ -435,118 +435,56 @@ void FilterStations(map<int, Station>& MapOfStations)
 
 void ConnectStations(std::map<int, Station> MapOfStations, std::map<int, Pipe>& MapOfPipes, Graph& ConnectedStations)
 {
-    /*if(ConnectedStations.)
-    ConnectedStations.FillAdj(MapOfStations);
-    ConnectedStations.FillIncidence(MapOfPipes, MapOfStations);*/
-    ConnectedStations.AddArc(MapOfPipes, MapOfStations);
-    
-    cout << "Матрица смежности" << endl;
-    for (int i = 0; i < ConnectedStations.Adj.size(); i++)
-    {
-        for (int j = 0; j < ConnectedStations.Adj[i].size(); j++)
-            cout << ConnectedStations.Adj[i][j] << " ";
-        cout << "\n";
-    }
-    cout << "Матрица инциденции" << endl;
-    for (int i = 0; i < ConnectedStations.Incidence.size(); i++)
-    {
-        for (int j = 0; j < ConnectedStations.Incidence[i].size(); j++)
-            cout << ConnectedStations.Incidence[i][j] << " ";
-        cout << "\n";
-    }
-
-
-    /*vector<vector<int>> Adj(MapOfStations.size(), vector<int>(MapOfStations.size()));
-    vector<vector<int>> Incidence(MapOfPipes.size(), vector<int>(MapOfStations.size()));
-    int FirstStationID;
-    int SecondStationID;
-    set<int>Stations;
-    set<int>Pipelines;
-    int PipeDiametre;
-    Pipe NewPipeline;
-
-   
-
     if (!MapOfStations.empty())
     {
-        cout << "Список станций" << endl;
-        for (const auto& p:MapOfStations)
-        {
-            Stations.insert(p.first);
-            cout << "ID станции: " << p.first + 1 << endl;
-            cout << p.second;
-        }
-        cout << "Выберите начальную станцию: ";
-        FirstStationID = ChooseID(Stations);
-        cout << "Выберите конечную станцию: ";
-        SecondStationID=ChooseID(Stations);
-        if (FirstStationID == SecondStationID || Adj[FirstStationID][SecondStationID]==1)
-        {
-            cout << "Станции уже соединены" << endl;
-            return;
-        }
-        else
-        {
-            cout << "Введите диаметр трубы для соединения станций: ";
-            Validation(PipeDiametre);
 
-            bool Connected=0;
-            bool Used=0;
-            for (const auto& p : MapOfPipes)
-            {
-                
-                    
-                if (p.second.PipeDiametre == PipeDiametre)
-                {
-                    for (int i = 0; i < MapOfStations.size() - 1; i++)
-                        if (Incidence[p.first][i] == 1)
-                        {
-                            Used = true;
-                            break;
-                        }
-                    if(!Used)
-                    {
-                        Adj[FirstStationID][SecondStationID] = 1;
-                        Incidence[p.first][FirstStationID] = 1;
-                        Incidence[p.first][SecondStationID] = 2;
-                        Connected = true;
-                        break;
-                    }
-                }
-            }
-            if (!Connected)
-            {
-                bool Choise;
-                cout << "Труба не найдена! Хотите создать новую трубу?\n0.НЕТ 1.ДА" << endl;
-                Validation(Choise);
-                if (Choise)
-                {
-                    Adj.push_back(vector<int>(MapOfStations.size()));
-                    Incidence.push_back(vector<int>(MapOfStations.size()));
-                    AddPipe(MapOfPipes);
-                    Adj[FirstStationID][SecondStationID] = 1;
-                    Incidence[MapOfPipes.size()-1][FirstStationID] = 1;
-                    Incidence[MapOfPipes.size()-1][SecondStationID] = 2;
-                }
-                
-
-            }
-        }
-        for (int i = 0; i < Adj.size(); i++)
+        ConnectedStations.AddArc(MapOfPipes, MapOfStations);
+    
+        cout << "Матрица смежности" << endl;
+        for (int i = 0; i < ConnectedStations.Adj.size(); i++)
         {
-            for(int j=0;j<Adj[i].size();j++)
-                cout << Adj[i][j]<<" ";
+            for (int j = 0; j < ConnectedStations.Adj[i].size(); j++)
+                cout << ConnectedStations.Adj[i][j] << " ";
             cout << "\n";
         }
-        cout << "--------------------" << endl;
-        for (int i = 0; i < Incidence.size(); i++)
+        cout << "Матрица инциденции" << endl;
+        for (int i = 0; i < ConnectedStations.Incidence.size(); i++)
         {
-            for (int j = 0; j < Incidence[i].size(); j++)
-                cout << Incidence[i][j] << " ";
+            for (int j = 0; j < ConnectedStations.Incidence[i].size(); j++)
+                cout << ConnectedStations.Incidence[i][j] << " ";
             cout << "\n";
         }
     }
     else
-        cout << "Станции не заданы" << endl;*/
+        cout << "Станции не заданы" << endl;
+
 
 }
+
+void TopologicalSort(std::map<int, Station> MapOfStations, Graph& ConnectedStations)
+{
+    bool connections = 0;
+    if(!ConnectedStations.Adj.empty())
+    {
+        for (int i = 0; i < ConnectedStations.Adj.size(); i++)
+            for (bool p:ConnectedStations.Adj[i])
+                if (p == 1)
+                {
+                    connections = 1;
+                    break;
+                }
+        if (connections)
+        {
+            cout << "Топологическая сортировка станций: ";
+            ConnectedStations.TopologicalSort(MapOfStations);
+        }
+        else
+            cout << "Нет соединенных станций!" << endl;
+
+    }
+        else
+            cout << "Нет соединенных станций!" << endl;
+    
+}
+
+
