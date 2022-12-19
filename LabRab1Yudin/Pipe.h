@@ -8,6 +8,7 @@ public:
 	std::string PipeName;
 	int PipeLength, PipeDiametre;
 	bool PipeSign;
+	bool Used = 0;
 	
 	void RedactRepairSign();
 

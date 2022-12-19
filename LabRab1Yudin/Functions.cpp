@@ -3,6 +3,20 @@
 #include "Graph.h"
 using namespace std;
 
+
+std::ifstream& operator>> (std::ifstream& fin, Connections& ConnectedStations)
+{
+    fin >> ConnectedStations.FirstStation>> ConnectedStations.SecondStation>> ConnectedStations.Pipeline;
+
+    return fin;
+}
+
+std::ofstream& operator<< (std::ofstream& fout, Connections& ConnectedStations)
+{
+    fout << ConnectedStations.FirstStation << "\n" << ConnectedStations.SecondStation << "\n" << ConnectedStations.Pipeline << endl;
+    return fout;
+}
+
 template <typename T>
 void Validation(T& input) // Процедура проверки правильности ввода
 {
@@ -40,7 +54,7 @@ void AddStation(map<int, Station>& MapOfStations) // Процедура добавления станци
 }
 
 
-void ObjReview(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // Процедура просмотра объектов
+void ObjReview(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations, Graph ConnectedStations) // Процедура просмотра объектов
 {
     Pipe pipe;
     Station station;
@@ -62,12 +76,25 @@ void ObjReview(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // Пр
             cout << station;
         }
     }
-
+    cout << "Матрица смежности" << endl;
+    for (int i = 0; i < ConnectedStations.Adj.size(); i++)
+    {
+        for (int j = 0; j < ConnectedStations.Adj[i].size(); j++)
+            cout << ConnectedStations.Adj[i][j] << " ";
+        cout << "\n";
+    }
+    cout << "Матрица инциденции" << endl;
+    for (int i = 0; i < ConnectedStations.Incidence.size(); i++)
+    {
+        for (int j = 0; j < ConnectedStations.Incidence[i].size(); j++)
+            cout << ConnectedStations.Incidence[i][j] << " ";
+        cout << "\n";
+    }
     if (MapOfStations.empty() && MapOfPipes.empty())
         cout << "Данные не заданы!" << endl;
 }
 
-void FileSave(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // Процедура сохранения данных в файл
+void FileSave(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations, Graph ConnectedStations) // Процедура сохранения данных в файл
 {
     Pipe pipe;
     Station station;
@@ -85,8 +112,7 @@ void FileSave(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // Про
     else
     {
 
-        OutData << MapOfPipes.size() << endl;
-        OutData << MapOfStations.size() << endl;
+        OutData << MapOfPipes.size() << "\n"<< MapOfStations.size() <<"\n" <<ConnectedStations.StationsPair.size()<< endl;
 
             for (const auto& p : MapOfPipes)
             {
@@ -96,6 +122,8 @@ void FileSave(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // Про
             {
                 OutData << s.second;
             }
+            for (auto g : ConnectedStations.StationsPair)
+                OutData << g.second;
         OutData.close();
         if (MapOfPipes.empty() && MapOfStations.empty())
             cout << "Сохранен пустой файл" << endl;
@@ -105,10 +133,11 @@ void FileSave(map<int, Pipe> MapOfPipes, map<int, Station> MapOfStations) // Про
     OutData.close();
 }
 
-void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations) // Процедура загрузки данных из файла
+void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations, Graph& ConnectedStations) // Процедура загрузки данных из файла
 {
     int PipesAmount;
     int StationsAmount;
+    int ConnectionsNumber;
     string FileName;
     ifstream InData;
 
@@ -126,7 +155,7 @@ void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations) // П
     {
         cout << "Файл успешно открыт" << endl;
 
-        InData >> PipesAmount >> StationsAmount;
+        InData >> PipesAmount >> StationsAmount>>ConnectionsNumber;
 
         if (PipesAmount == 0 && StationsAmount == 0)
         {
@@ -144,6 +173,17 @@ void FileRead(map<int, Pipe>& MapOfPipes, map<int, Station>& MapOfStations) // П
             {
                 InData >> MapOfStations[i];
             }
+            for (int i(0); i < ConnectionsNumber; i++)
+                InData >> ConnectedStations.StationsPair[i];
+        }
+
+        ConnectedStations.FillAdj(MapOfStations);
+        ConnectedStations.FillIncidence(MapOfPipes, MapOfStations);
+        for (auto c : ConnectedStations.StationsPair)
+        {
+            ConnectedStations.Adj[c.second.FirstStation][c.second.SecondStation] = 1;
+            ConnectedStations.Incidence[c.second.Pipeline][c.second.FirstStation] = 1;
+            ConnectedStations.Incidence[c.second.Pipeline][c.second.SecondStation] = 2;
         }
 
     }
@@ -165,7 +205,7 @@ int ChooseID(set<int> keys)
     }
     return key-1;
 }
-void RedactPipe(map<int, Pipe>& MapOfPipes)
+void RedactPipe(map<int, Pipe>& MapOfPipes, Graph& graph)
 {
     set<int> keys;
     int key;
@@ -187,7 +227,12 @@ void RedactPipe(map<int, Pipe>& MapOfPipes)
         if (choise)
             MapOfPipes[key].RedactRepairSign();
         else
-            MapOfPipes.erase(key);
+        {
+           MapOfPipes.erase(key);
+           graph.Incidence[key].clear();
+
+        }
+
     }
     else
         cout << "Трубы не заданы!" << endl;
@@ -215,11 +260,18 @@ void RedactStation(map<int, Station>& MapOfStations)
         if (choise)
             MapOfStations[key].RedactWorkShopNum();
         else
+        {
             MapOfStations.erase(key);
+            
+        }
     }
     else
         cout << "Станции не заданы!" << endl;
 }
+
+
+
+
 
 set<int> RenewIDs(set<int> ids)
 {
@@ -456,7 +508,7 @@ void ConnectStations(std::map<int, Station> MapOfStations, std::map<int, Pipe>& 
         }
     }
     else
-        cout << "Станции не заданы" << endl;
+        cout << "Станции не заданы!" << endl;
 
 
 }

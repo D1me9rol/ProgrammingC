@@ -17,15 +17,15 @@ void AddPipe(std::map<int, Pipe>& MapOfPipes);
 
 void AddStation(std::map<int, Station>& MapOfStations);
 
-void ObjReview(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfStations);
+void ObjReview(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfStations, Graph ConnectedStations);
 
-void FileSave(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfStations);
+void FileSave(std::map<int, Pipe> MapOfPipes, std::map<int, Station> MapOfStations, Graph ConnectedStations);
 
-void FileRead(std::map<int, Pipe>& MapOfPipes, std::map<int, Station>& MapOfStations);
+void FileRead(std::map<int, Pipe>& MapOfPipes, std::map<int, Station>& MapOfStations, Graph& ConnectedStations);
 
 void RedactStation(std::map<int, Station>& MapOfStations);
 
-void RedactPipe(std::map<int, Pipe>& MapOfPipes);
+void RedactPipe(std::map<int, Pipe>& MapOfPipes, Graph& graph);
 
 void FilterPipes(std::map<int, Pipe>& MapOfPipes);
 

@@ -6,14 +6,21 @@
 #include <map>
 #include <vector>
 #include <set>
-#include <stack>
-//#include "Functions.h"
+
+struct Connections
+{
+	int FirstStation;
+	int SecondStation;
+	int Pipeline;
+};
 
 class Graph
 {
 public:
-	std::vector<std::vector<bool>>Adj;// (MapOfStations.size(), vector<int>(MapOfStations.size()));
-	std::vector<std::vector<int>>Incidence;// (MapOfPipes.size(), vector<int>(MapOfStations.size()));
+	Connections edge;
+	std::vector<std::vector<bool>>Adj;
+	std::vector<std::vector<int>>Incidence;
+	std::map<int, Connections> StationsPair;
 
 	
 
@@ -23,5 +30,8 @@ public:
 	void TopologicalSort(std::map<int, Station> MapOfStations);
 	void TopologicalSortUtil(int v, std::vector<int>& Vertexes, std::vector<bool>&visited);
 
+
+	//friend std::ifstream& operator>> (std::ifstream& fin, Connections& ConnectedStations);
+	//friend std::ofstream& operator<< (std::ofstream& fout, Connections& ConnectedStations);
 };
 

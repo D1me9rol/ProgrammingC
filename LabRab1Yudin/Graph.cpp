@@ -4,6 +4,9 @@
 using namespace std;
 
 
+
+
+
 void Graph::FillAdj(std::map<int, Station> MapOfStations)
 {
 
@@ -79,26 +82,30 @@ void Graph::AddArc(std::map<int, Pipe>& MapOfPipes, std::map<int, Station> MapOf
 
             bool Connected = 0;
             bool Unused = 1;
-            int Line;
+            int PipeID;
             for (const auto& p : MapOfPipes)
             {
                 if (p.second.PipeDiametre == PipeDiametre)
                 {
-                    Line = p.first;
+                    PipeID= p.first;
                     for (int i = 0; i < MapOfStations.size(); i++)
                         if (Incidence[p.first][i] > 0)
                         {
                             Unused = 0;
-                            Line = -1;
+                            PipeID= -1;
                             break;
                         }
                 
-                    if (Line > -1)
+                    if (PipeID > -1)
                     {
                         Adj[FirstStationID][SecondStationID] = 1;
                         Incidence[p.first][FirstStationID] = 1;
                         Incidence[p.first][SecondStationID] = 2;
                         Connected = true;
+                        edge.FirstStation = FirstStationID;
+                        edge.SecondStation = SecondStationID;
+                        edge.Pipeline = p.first;
+                        StationsPair.emplace(StationsPair.size(), edge);
                         break;
 
                     }
@@ -118,6 +125,10 @@ void Graph::AddArc(std::map<int, Pipe>& MapOfPipes, std::map<int, Station> MapOf
                     Adj[FirstStationID][SecondStationID] = 1;
                     Incidence[MapOfPipes.size() - 1][FirstStationID] = 1;
                     Incidence[MapOfPipes.size() - 1][SecondStationID] = 2;
+                    edge.FirstStation = FirstStationID;
+                    edge.SecondStation = SecondStationID;
+                    edge.Pipeline = MapOfPipes.size() - 1;
+                    StationsPair.emplace(StationsPair.size(), edge);
                 }
                 else
                     return;
@@ -145,11 +156,13 @@ void Graph::TopologicalSortUtil(int v, std::vector<int>& Vertexes, vector <bool>
 
         for (int p : Vertexes)
             if (p == v)
-                used == 1;
+                used = 1;
         if (!used)
             Vertexes.push_back(v);
     }
 }
+
+
 
 void Graph::TopologicalSort(std::map<int, Station> MapOfStations)
 {

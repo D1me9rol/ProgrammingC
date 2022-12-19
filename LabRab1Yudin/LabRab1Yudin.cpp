@@ -42,19 +42,19 @@ int main()
             AddStation(MapOfStations);
             break;
         case 3:
-            ObjReview(MapOfPipes, MapOfStations);
+            ObjReview(MapOfPipes, MapOfStations, ConnectedStations);
             break;
         case 4:
-            RedactPipe(MapOfPipes);
+            RedactPipe(MapOfPipes, ConnectedStations);
             break;
         case 5:
             RedactStation(MapOfStations);
             break;
         case 6:
-            FileSave(MapOfPipes, MapOfStations);
+            FileSave(MapOfPipes, MapOfStations, ConnectedStations);
             break;
         case 7:
-            FileRead(MapOfPipes, MapOfStations);
+            FileRead(MapOfPipes, MapOfStations, ConnectedStations);
             break;
         case 8:
             FilterPipes(MapOfPipes);
